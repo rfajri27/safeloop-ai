@@ -1,6 +1,6 @@
 """Route configuration for FastAPI application."""
 from fastapi import Depends
-from fastapi_limiter.depends import RateLimiter
+from config.ratelimit import RateLimiter
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from routes import api
