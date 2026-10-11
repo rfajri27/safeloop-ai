@@ -1,0 +1,63 @@
+{
+  "status": 1,
+  "data": {
+    "run_id": "fixture-redteam-1",
+    "row_code": "HZ-N1-003",
+    "prompt_version": "redteam.v1",
+    "model_id": "gemini-3.5-flash",
+    "schema_valid": true,
+    "proposals": [
+      {
+        "index": 1,
+        "kind": "new_scenario",
+        "proposed_row_code": "HZ-N1-003a",
+        "title": "Strainer S-101 blocked starves P-101 and P-101B",
+        "guide_word": "no",
+        "parameter": "flow",
+        "deviation": "No reflux",
+        "cause": "Strainer S-101 blocked; P-101 and P-101B both lose suction",
+        "consequence": "Loss of reflux; column / V-201 over-pressure",
+        "severity": 4,
+        "likelihood": 2,
+        "safeguards": ["PSV-201", "PAH-201"],
+        "entities": ["S-101", "P-101", "P-101B", "V-201"],
+        "recommendation": "Review the S-101 ΔP alarm setpoint and add a strainer check to the P-101B auto-start test.",
+        "citations": [{ "ref": "asset_model:L-104" }, { "ref": "doc:SOP-P101-02#3" }],
+        "verdict": {
+          "verdict": "pass",
+          "checks": [
+            { "check": "entities_in_asset_model", "passed": true, "detail": "4 / 4" },
+            { "check": "citations_resolve", "passed": true, "detail": "2 / 2" },
+            { "check": "no_control_action_wording", "passed": true }
+          ]
+        },
+        "approval_item_id": "fixture-proposal-1",
+        "audit_id": "AUD-0147"
+      },
+      {
+        "index": 2,
+        "kind": "worsened",
+        "title": "P-101B fails to start on demand",
+        "cause": "Credits low-flow trip FSL-201 as a further safeguard.",
+        "severity": 4,
+        "likelihood": 3,
+        "safeguards": ["FSL-201"],
+        "citations": [{ "ref": "doc:MAN-P101#4.1" }],
+        "verdict": {
+          "verdict": "block",
+          "reason": "FSL-201 not found in asset model",
+          "checks": [
+            { "check": "entities_in_asset_model", "passed": false, "detail": "FSL-201 not found" },
+            { "check": "citations_resolve", "passed": true, "detail": "1 / 1" },
+            { "check": "no_control_action_wording", "passed": true }
+          ]
+        },
+        "approval_item_id": null,
+        "audit_id": "AUD-0148"
+      }
+    ],
+    "_fixture_note": "Illustrative Red Team result copied from the API spec (section 6.6). Written by hand, not model output."
+  },
+  "metadata": null,
+  "message": "Success"
+}

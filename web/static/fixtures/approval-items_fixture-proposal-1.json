@@ -1,0 +1,68 @@
+{
+  "status": 1,
+  "data": {
+    "id": "fixture-proposal-1",
+    "artifact_type": "hazop_change",
+    "title": "HZ-N1-003a · strainer common cause",
+    "source": "Red Team · redteam.v1 · Node 1",
+    "judge": "pass",
+    "confidence": "medium",
+    "decision": "pending",
+    "age_s": 120,
+    "draft": {
+      "kind": "new_scenario",
+      "parent_row_code": "HZ-N1-003",
+      "proposed_row_code": "HZ-N1-003a",
+      "title": "Strainer S-101 blocked starves both pumps",
+      "deviation": "No reflux",
+      "cause": "Strainer S-101 blocked; P-101 and P-101B both lose suction",
+      "consequence": "Loss of reflux; column / V-201 over-pressure",
+      "severity": 4,
+      "likelihood": 2,
+      "safeguards": [
+        "PSV-201",
+        "PAH-201"
+      ],
+      "recommendation": "Review the S-101 ΔP alarm setpoint and add a strainer check to the P-101B auto-start test."
+    },
+    "checks": [
+      {
+        "check": "entities_in_asset_model",
+        "passed": true,
+        "detail": "4 / 4"
+      },
+      {
+        "check": "citations_resolve",
+        "passed": true,
+        "detail": "2 / 2"
+      },
+      {
+        "check": "no_control_action_wording",
+        "passed": true,
+        "detail": "pass"
+      }
+    ],
+    "citations": [
+      {
+        "index": 1,
+        "label": "asset model L-104"
+      },
+      {
+        "index": 2,
+        "label": "SOP-P101-02 §3",
+        "doc_code": "SOP-P101-02"
+      }
+    ],
+    "audit": {
+      "agent": "redteam",
+      "model_id": "gemini-3.5-flash",
+      "prompt_version": "redteam.v1",
+      "sources": 2,
+      "judge": "pass",
+      "drafted_at": "2026-10-18T07:33:10Z"
+    },
+    "_fixture_note": "Illustrative approval item written by hand from the API spec (section 6.8). Not model output."
+  },
+  "metadata": null,
+  "message": "Success"
+}
