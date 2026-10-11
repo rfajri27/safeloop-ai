@@ -1,5 +1,5 @@
 """Document SQLAlchemy model (knowledge base group)."""
-from sqlalchemy import Boolean, Column, Date, String, Text
+from sqlalchemy import Boolean, Column, Date, String, Text, UniqueConstraint
 from sqlalchemy import text as sa_text
 from config.databases.postgresql import Base
 from app.models.columns import timestamp_now, uuid_fk, uuid_pk
@@ -9,12 +9,14 @@ from app.models.enums import DataOrigin, data_origin_enum, doc_type_enum
 class Document(Base):
     """Source document metadata; vectors live in Qdrant."""
     __tablename__ = "documents"
+    __table_args__ = (
+        UniqueConstraint("doc_code", "revision", name="uq_documents_doc_code_revision"),
+    )
 
     id = uuid_pk()
     doc_code = Column(
         String(32),
         nullable=False,
-        unique=True,
         comment="MAN-P101, SOP-P101-02, INC-2024-017"
     )
     title = Column(String(300), nullable=False)

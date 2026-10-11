@@ -13,7 +13,8 @@ Reads: hazop_rows, hazop_row_safeguards, safeguards, safeguard_dependencies,
 from typing import Optional
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.utils.response import response_error
+from app.services.live_state import get_live_run, list_hazop_rows
+from app.utils.response import response_error, response_success
 
 
 class HazopService:
@@ -34,7 +35,17 @@ class HazopService:
         rescored: Optional[bool] = None
     ) -> JSONResponse:
         """Return {nodes: [{code, name, rows: [HazopRowSummary]}]} sorted by row code."""
-        return response_error("Not implemented", code=501)
+        run = await get_live_run(self.db)
+        nodes: dict[str, dict] = {}
+        for live in await list_hazop_rows(self.db, run, node_code=node):
+            if band and live.summary["band_live"] != band.value:
+                continue
+            if rescored is not None and live.summary["rescored_this_run"] != rescored:
+                continue
+            group = nodes.setdefault(live.node.code, {"code": live.node.code, "name": live.node.name, "rows": []})
+            group["rows"].append(live.summary)
+
+        return response_success({"nodes": [nodes[code] for code in sorted(nodes)]})
 
     async def get_matrix(self) -> JSONResponse:
         """Return all 25 cells with live and design-basis rows, moved rows and rule set version."""

@@ -13,6 +13,11 @@ class GoldenItem(Base):
     )
 
     id = uuid_pk()
+    item_code = Column(
+        String(16),
+        unique=True,
+        comment="GH-01, QA-01, OOC-01, GR-01, RCA-01"
+    )
     set_name = Column(
         String(32),
         nullable=False,

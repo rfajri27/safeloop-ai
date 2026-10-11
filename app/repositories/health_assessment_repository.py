@@ -1,6 +1,6 @@
 """Repository for HealthAssessment entity."""
 from typing import Optional, Sequence
-from sqlalchemy import select
+from sqlalchemy import func, select
 from app.repositories.base import BaseRepository
 from app.models.health_assessment_model import HealthAssessment
 
@@ -76,3 +76,11 @@ class HealthAssessmentRepository(BaseRepository[HealthAssessment]):
             .order_by(HealthAssessment.replay_hour)
         )
         return result.scalars().all()
+
+    async def get_latest_hour(self, replay_run_id: str) -> Optional[int]:
+        """Last replay hour assessed in a run (the run's current hour)."""
+        result = await self.session.execute(
+            select(func.max(HealthAssessment.replay_hour))
+            .where(HealthAssessment.replay_run_id == replay_run_id)
+        )
+        return result.scalar()

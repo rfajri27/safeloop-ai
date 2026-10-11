@@ -30,6 +30,11 @@ class UserRepository(BaseRepository[User]):
         result = await self.session.execute(query.limit(1))
         return result.scalar_one_or_none() is not None
 
+    async def handle_exists(self, handle: str) -> bool:
+        """Check if a login handle is taken."""
+        result = await self.session.execute(select(User.id).where(User.handle == handle.lower()).limit(1))
+        return result.scalar_one_or_none() is not None
+
     async def list_filtered(
         self,
         role: Optional[UserRole] = None,
@@ -51,14 +56,14 @@ class UserRepository(BaseRepository[User]):
         return result.scalar() or 0
 
     async def get_demo_user(self, handle: str) -> Optional[User]:
-        """Get a seeded demo user by handle (rina, dimas, ...), matched on display name."""
+        """Get a seeded demo user by handle (rina, dimas, ...)."""
         result = await self.session.execute(
             select(User).where(
                 User.is_demo.is_(True),
-                func.lower(User.display_name) == handle.lower(),
+                User.handle == handle.lower(),
             )
         )
-        return result.scalars().first()
+        return result.scalar_one_or_none()
 
     async def list_by_role(self, role: UserRole) -> Sequence[User]:
         """Users with a role."""

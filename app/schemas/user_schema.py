@@ -13,12 +13,14 @@ from app.schemas.common_schema import UserRole
 
 class UserCreate(BaseModel):
     """Schema for POST /users."""
-    display_name: str = Field(
+    handle: str = Field(
         ...,
         min_length=1,
-        max_length=120,
-        description="Display name, also the demo login handle (e.g. Rina)"
+        max_length=32,
+        pattern=r"^[a-z0-9_]+$",
+        description="Unique demo login handle (e.g. rina)"
     )
+    display_name: str = Field(..., min_length=1, max_length=120, description="Display name (e.g. Rina)")
     email: Optional[EmailStr] = Field(None, description="Unique email address")
     role: UserRole = Field(..., description="User role")
     is_demo: bool = Field(default=True, description="Seeded demo user")
@@ -37,6 +39,7 @@ class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: str = Field(..., description="User UUID")
+    handle: str = Field(..., description="Demo login handle")
     display_name: str = Field(..., description="Display name")
     email: Optional[str] = Field(None, description="Email address")
     role: UserRole = Field(..., description="User role")

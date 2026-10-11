@@ -11,6 +11,12 @@ class User(Base):
     __tablename__ = "users"
 
     id = uuid_pk()
+    handle = Column(
+        String(32),
+        nullable=False,
+        unique=True,
+        comment="Demo login handle: rina, dimas, agus, auditor, admin"
+    )
     display_name = Column(String(120), nullable=False)
     email = Column(String(200), unique=True)
     role = Column(user_role_enum, nullable=False)
@@ -18,4 +24,4 @@ class User(Base):
     created_at = timestamp_now()
 
     def __repr__(self) -> str:
-        return f"<User(display_name={self.display_name}, role={self.role})>"
+        return f"<User(handle={self.handle}, role={self.role})>"

@@ -60,11 +60,14 @@ class UserService:
         return response_success(UserResponse.model_validate(user).model_dump())
 
     async def create_user(self, request: UserCreate) -> JSONResponse:
-        """Create a user; 409 if the email is taken."""
+        """Create a user; 409 if the handle or email is taken."""
+        if await self.repo.handle_exists(request.handle):
+            return response_error(f"User with handle '{request.handle}' already exists", code=409)
         if request.email and await self.repo.email_exists(request.email):
             return response_error(f"User with email '{request.email}' already exists", code=409)
 
         user = User(
+            handle=request.handle,
             display_name=request.display_name,
             email=request.email,
             role=request.role,

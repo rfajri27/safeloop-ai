@@ -11,7 +11,8 @@ Reads: assets, asset_links, sensor_tags, sensor_readings, health_assessments
 from typing import Optional
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.utils.response import response_error
+from app.services.live_state import get_live_run, list_asset_health
+from app.utils.response import response_error, response_success
 
 
 class AssetService:
@@ -32,8 +33,16 @@ class AssetService:
         skip: int = 0,
         limit: int = 50
     ) -> JSONResponse:
-        """List assets with their latest health index and band."""
-        return response_error("Not implemented", code=501)
+        """List monitored assets with their latest health index and band (null before a run)."""
+        run = await get_live_run(self.db)
+        items = await list_asset_health(self.db, run, node_code=node)
+        if band:
+            items = [item for item in items if item["band"] == band.value]
+
+        return response_success(
+            items[skip:skip + limit],
+            metadata={"total": len(items), "skip": skip, "limit": limit}
+        )
 
     async def get_asset(self, tag: str) -> JSONResponse:
         """Return asset detail; 404 for an unknown tag."""

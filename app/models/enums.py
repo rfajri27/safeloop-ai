@@ -64,6 +64,7 @@ class SafeguardType(str, enum.Enum):
     IPL = "ipl"
     PROCEDURE = "procedure"
     SIS = "sis"
+    MECHANICAL = "mechanical"
 
 
 class RecordStatus(str, enum.Enum):
