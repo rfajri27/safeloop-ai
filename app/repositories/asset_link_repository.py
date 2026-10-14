@@ -40,3 +40,13 @@ class AssetLinkRepository(BaseRepository[AssetLink]):
             query = query.where(AssetLink.relation == relation)
         result = await self.session.execute(query.limit(1))
         return result.scalar_one_or_none() is not None
+
+    async def list_all(self) -> Sequence[AssetLink]:
+        """Every edge, ordered by link code (Red Team asset model, Judge)."""
+        result = await self.session.execute(select(AssetLink).order_by(AssetLink.code))
+        return result.scalars().all()
+
+    async def get_by_code(self, code: str) -> Optional[AssetLink]:
+        """An edge by its citation code, e.g. L-104."""
+        result = await self.session.execute(select(AssetLink).where(AssetLink.code == code))
+        return result.scalar_one_or_none()

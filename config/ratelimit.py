@@ -11,6 +11,7 @@ from fastapi import Request, Response
 from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter as _FastAPILimiterRateLimiter
 from config.databases.redis import redis_client
+from app.utils.jwt_utils import JwtUtils
 from app.utils.response import CustomHTTPException
 
 # Alias for backward compatibility
@@ -18,8 +19,13 @@ redis_connection = redis_client
 
 
 async def service_name_identifier(request: Request):
-    """Identify client by IP address for rate limiting."""
-    return request.client.host
+    """Identify the caller for rate limiting: the JWT user (spec: limits are per user), else the IP."""
+    auth = request.headers.get("authorization", "")
+    if auth.lower().startswith("bearer "):
+        payload = JwtUtils.decode_access_token(auth[7:].strip())
+        if payload and payload.get("sub"):
+            return f"user:{payload['sub']}"
+    return f"ip:{request.client.host if request.client else 'unknown'}"
 
 
 async def custom_callback(request: Request, response: Response, pexpire: int):
@@ -27,11 +33,11 @@ async def custom_callback(request: Request, response: Response, pexpire: int):
     Custom callback when rate limit is exceeded.
 
     Raises:
-        CustomHTTPException: 400 with retry information
+        CustomHTTPException: 429 with retry information
     """
     expire = ceil(pexpire / 1000)
     raise CustomHTTPException(
-        status_code=400,
+        status_code=429,
         message=f"Too many requests. Retry after {expire} seconds.",
         data={"retry_after": expire}
     )

@@ -34,9 +34,30 @@ class DocumentRepository(BaseRepository[Document]):
         return query
 
     async def get_by_code(self, doc_code: str) -> Optional[Document]:
-        """Get a document by code, e.g. SOP-P101-02."""
-        result = await self.session.execute(select(Document).where(Document.doc_code == doc_code))
+        """Get a document by code, e.g. SOP-P101-02: the current revision, else the newest."""
+        result = await self.session.execute(
+            select(Document)
+            .where(Document.doc_code == doc_code)
+            .order_by(Document.is_current.desc(), Document.created_at.desc())
+            .limit(1)
+        )
         return result.scalar_one_or_none()
+
+    async def get_by_code_revision(self, doc_code: str, revision: str) -> Optional[Document]:
+        """One revision of a document (ingestion upsert key)."""
+        result = await self.session.execute(
+            select(Document).where(Document.doc_code == doc_code, Document.revision == revision)
+        )
+        return result.scalar_one_or_none()
+
+    async def list_revisions(self, doc_code: str) -> Sequence[Document]:
+        """Every revision of a document, current first."""
+        result = await self.session.execute(
+            select(Document)
+            .where(Document.doc_code == doc_code)
+            .order_by(Document.is_current.desc(), Document.revision.desc())
+        )
+        return result.scalars().all()
 
     async def list_filtered(
         self,

@@ -1,8 +1,8 @@
 // Knowledge assistant: cited answers streamed over AG-UI SSE, with a source viewer.
 
-import { api, postStream, isNotImplemented } from '../api.js';
+import { api, postStream } from '../api.js';
 import {
-  html, raw, escape, render, icon, sampleFlag, titleCase, loading, on, toastError, ROLE_LABEL, duration,
+  html, raw, escape, render, icon, titleCase, loading, on, toastError, ROLE_LABEL, duration,
 } from '../ui.js';
 
 export const title = 'Knowledge assistant';
@@ -22,7 +22,7 @@ const STEP_LABEL = {
 };
 
 // The thread survives navigation between screens for this page load.
-const chat = { sessionId: null, sessionOwner: null, messages: [], docs: null, docsSample: false, activeMsg: null, activeCite: null, source: null };
+const chat = { sessionId: null, sessionOwner: null, messages: [], docs: null, activeMsg: null, activeCite: null, source: null };
 
 export async function mount(el, docParam, shell) {
   const me = shell.user;
@@ -44,7 +44,7 @@ export async function mount(el, docParam, shell) {
   };
 
   if (!chat.docs) {
-    api.get('/documents').then((res) => { chat.docs = res.data || []; chat.docsSample = res.sample; draw(); }).catch(() => { chat.docs = []; draw(); });
+    api.get('/documents').then((res) => { chat.docs = res.data || []; draw(); }).catch(() => { chat.docs = []; draw(); });
   }
   if (docParam) openDoc(docParam);
 
@@ -59,13 +59,8 @@ export async function mount(el, docParam, shell) {
 
   async function ensureSession() {
     if (chat.sessionId) return chat.sessionId;
-    try {
-      const res = await api.raw('POST', '/chat-sessions');
-      chat.sessionId = res.data.session_id;
-    } catch (err) {
-      if (!isNotImplemented(err)) throw err;
-      chat.sessionId = 'pending';
-    }
+    const res = await api.post('/chat-sessions');
+    chat.sessionId = res.data.session_id;
     return chat.sessionId;
   }
 
@@ -84,11 +79,10 @@ export async function mount(el, docParam, shell) {
     controller = new AbortController();
     try {
       const sid = await ensureSession();
-      const res = await postStream(`/chat-sessions/${encodeURIComponent(sid)}/messages/stream`, { content }, (ev) => {
+      await postStream(`/chat-sessions/${encodeURIComponent(sid)}/messages/stream`, { content }, (ev) => {
         handleEvent(msg, ev);
         draw();
-      }, { fixtureStream: 'sse_chat_example.txt', signal: controller.signal });
-      msg.sample = res.sample;
+      }, { signal: controller.signal });
     } catch (err) {
       if (err.name !== 'AbortError') {
         msg.error = err.message;
@@ -177,7 +171,6 @@ async function loadSource(cite) {
     out.doc = res.data;
   } catch {
     out.doc = doc || null;
-    out.docSample = Boolean(doc) && chat.docsSample;
   }
   if (cite.chunk_id) {
     try {
@@ -236,7 +229,6 @@ function botMsg(m, i) {
     <span class="bot-avatar">${icon(refused ? 'lock' : 'sparkle', { size: 14, stroke: '#FFFFFF' })}</span>
     <span style="font-size: 13px; font-weight: 600">${who}</span>
     ${!m.pending && timing ? html`<span class="mono muted" style="font-size: 12px">${timing}</span>` : ''}
-    ${m.sample ? sampleFlag(true, 'Sample answer · chat endpoint pending') : ''}
   </div>`;
 
   if (m.error && !m.text) {
@@ -282,7 +274,7 @@ function sourcePanel() {
 
   if (!src) {
     return html`<aside aria-label="Document library" class="card drawer" style="width: 400px">
-      <div class="card-head"><h2 class="card-title">Indexed documents</h2>${sampleFlag(chat.docsSample, 'Fixture list')}</div>
+      <div class="card-head"><h2 class="card-title">Indexed documents</h2></div>
       ${tabs}
       ${chat.docs == null ? loading(300) : chat.docs.length ? html`<div class="doc-list">${chat.docs.map((d) => html`<button type="button" class="cite" data-doc="${d.doc_code}" style="border: none; text-align: left; cursor: pointer; font: inherit">
         <span class="badge-icon" style="width: 28px; height: 28px; border-radius: 9px; background: var(--accent-soft)">${icon('doc', { size: 14, stroke: '#3448F0' })}</span>
@@ -317,7 +309,6 @@ function sourcePanel() {
       </div>
       ${src.chunk ? html`<div class="passage"><span style="font-size: 12px; font-weight: 600; color: var(--accent)">Cited passage${src.chunk.section ? ` · ${src.chunk.section}` : ''}${src.chunk.page ? ` · page ${src.chunk.page}` : ''}</span>${src.chunk.text}</div>`
         : html`<div class="empty"><strong>Passage not available</strong><span>${src.chunk_id ? 'The document-chunk endpoint is not implemented yet.' : 'This citation has no chunk to show. Open the document to read it.'}</span></div>`}
-      ${src.docSample ? html`<div>${sampleFlag(true, 'Metadata from fixture list')}</div>` : ''}
     `}
     <p class="muted" style="font-size: 13px">Document text is treated as data, never as instructions.</p>
   </aside>`;

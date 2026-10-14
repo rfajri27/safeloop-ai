@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from config.databases.postgresql import get_db
 from app.middleware.auth_middleware import get_current_user
 from app.services.audit_service import AuditService
-from app.schemas.common_schema import DEFAULT_LIMIT, MAX_LIMIT, AuditActor, AuditEventType
+from app.schemas.common_schema import DEFAULT_LIMIT, MAX_LIMIT, AuditEventType
 
 router = APIRouter(
     prefix="/audit-events",
@@ -27,7 +27,12 @@ def get_audit_service(db: AsyncSession = Depends(get_db)) -> AuditService:
 @router.get("", summary="List audit events")
 async def get_events(
     type: Optional[AuditEventType] = Query(None, description="Event type filter"),
-    actor: Optional[AuditActor] = Query(None, description="Actor filter"),
+    actor: Optional[str] = Query(
+        None,
+        max_length=64,
+        description="Actor: health_agent, risk_engine, redteam, judge, knowledge_agent, guardrail, user, "
+                    "or a label shown on the Audit screen (Health Agent, Rina, ...)",
+    ),
     run_id: Optional[str] = Query(None, description="Replay run id"),
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(DEFAULT_LIMIT, ge=1, le=MAX_LIMIT, description="Maximum records to return"),

@@ -70,6 +70,26 @@ class ApprovalItemRepository(BaseRepository[ApprovalItem]):
         result = await self.session.execute(union(from_proposals, from_rescores))
         return result.scalars().all()
 
+    async def withdraw_pending_rescores(self, replay_run_id: str, reason: str) -> Sequence[str]:
+        """Close a reset run's pending re-score items (flush only). Returns their ids.
+
+        A re-score of a run that no longer exists is moot, so it leaves the
+        queue as rejected with the reason, decided by no one (the system).
+        """
+        result = await self.session.execute(
+            update(ApprovalItem)
+            .where(
+                ApprovalItem.decision == ApprovalDecision.PENDING,
+                ApprovalItem.rescore_id.in_(
+                    select(RiskRescore.id).where(RiskRescore.replay_run_id == replay_run_id)
+                ),
+            )
+            .values(decision=ApprovalDecision.REJECTED, decision_reason=reason, decided_at=utcnow())
+            .returning(ApprovalItem.id)
+            .execution_options(synchronize_session=False)
+        )
+        return result.scalars().all()
+
     async def decide(
         self,
         item_id: str,

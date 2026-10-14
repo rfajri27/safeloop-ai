@@ -2,7 +2,7 @@
 
 import { api } from '../api.js';
 import {
-  html, render, icon, bandShape, healthBand, riskPill, riskBand, sampleFlag, clock, duration,
+  html, render, icon, bandShape, healthBand, riskPill, riskBand, clock, duration,
   loading, errorState, plural, num,
 } from '../ui.js';
 
@@ -17,7 +17,7 @@ export async function mount(el, _param, shell) {
 
   const draw = () => {
     if (!shell.overview) { render(el, loading(520)); return; }
-    render(el, view(shell.overview, register, shell.overviewSample));
+    render(el, view(shell.overview, register));
   };
 
   const loadRegister = async () => {
@@ -36,12 +36,11 @@ export async function mount(el, _param, shell) {
   return () => window.removeEventListener('shell:update', onUpdate);
 }
 
-function view(ov, register, sample) {
+function view(ov, register) {
   const nodes = register?.nodes ?? [];
   const rows = nodes.flatMap((n) => n.rows);
   const nodeNames = Object.fromEntries(nodes.map((n) => [n.code, n.name]));
   return html`
-    ${sample ? html`<div>${sampleFlag(true)}</div>` : ''}
     ${headline(ov.headline)}
     <div class="row collapse-lg">
       ${healthCard(ov.health_tiles, nodeNames)}

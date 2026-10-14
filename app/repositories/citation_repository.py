@@ -55,3 +55,12 @@ class CitationRepository(BaseRepository[Citation]):
             select(Citation).where(Citation.proposal_id.in_(proposal_ids))
         )
         return result.scalars().all()
+
+    async def cited_chunk_ids(self, chunk_ids: Sequence[str]) -> set[str]:
+        """Which of the given chunks some citation points at (they must not be deleted)."""
+        if not chunk_ids:
+            return set()
+        result = await self.session.execute(
+            select(Citation.chunk_id).where(Citation.chunk_id.in_(chunk_ids)).distinct()
+        )
+        return set(result.scalars().all())

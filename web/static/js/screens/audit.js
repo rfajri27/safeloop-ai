@@ -1,7 +1,7 @@
 // Audit log: append-only record, newest first, with summary tiles and filters.
 
 import { api } from '../api.js';
-import { html, render, icon, sampleFlag, clock, titleCase, loading, errorState, on } from '../ui.js';
+import { html, render, icon, clock, titleCase, loading, errorState, on } from '../ui.js';
 
 export const title = 'Audit log';
 export const subtitle = 'Every draft, re-score, refusal and decision, newest first';
@@ -20,7 +20,7 @@ const OUTCOME = {
 };
 
 export async function mount(el) {
-  const state = { events: null, total: 0, sample: false, summary: null, summarySample: false, error: null, q: '', type: '', actor: '', loadingMore: false };
+  const state = { events: null, total: 0, summary: null, error: null, q: '', type: '', actor: '', loadingMore: false };
 
   const query = (skip) => {
     const p = new URLSearchParams({ skip: String(skip), limit: String(PAGE) });
@@ -45,7 +45,6 @@ export async function mount(el) {
       const res = await api.get(query(0));
       state.events = res.data || [];
       state.total = res.metadata?.total ?? state.events.length;
-      state.sample = res.sample;
       state.error = null;
     } catch (err) {
       state.events = [];
@@ -54,7 +53,7 @@ export async function mount(el) {
     draw();
   }
 
-  api.get('/audit-events/summary').then((res) => { state.summary = res.data; state.summarySample = res.sample; draw(); }).catch(() => {});
+  api.get('/audit-events/summary').then((res) => { state.summary = res.data; draw(); }).catch(() => {});
 
   on(el, 'input', '#audit-search', (e) => { state.q = e.target.value; draw(); });
   on(el, 'change', '#audit-type', (e) => { state.type = e.target.value; load(); });
@@ -75,7 +74,7 @@ export async function mount(el) {
 }
 
 function visible(s) {
-  // Fixture data ignores query params, so filter client-side as well.
+  // Type and actor are filtered server-side; the search box filters the loaded page.
   return (s.events || []).filter((e) => {
     if (s.type && e.type !== s.type) return false;
     if (s.actor && !String(e.actor).toLowerCase().includes(s.actor.toLowerCase())) return false;
@@ -103,7 +102,6 @@ function view(s) {
         [sum?.blocked_by_judge ?? '—', 'blocked by Judge'],
         [sum?.refused ?? '—', 'refused'],
       ].map(([v, l]) => html`<div class="stat"><span class="stat-value">${v}</span><span class="stat-label">${l}</span></div>`)}
-      ${sampleFlag(s.summarySample)}
     </section>
     <section class="card">
       <div class="toolbar">
@@ -116,7 +114,6 @@ function view(s) {
           <option value="">All actors</option>
           ${actors.map((a) => html`<option value="${a}"${s.actor === a ? html` selected` : ''}>${a}</option>`)}
         </select></label>
-        ${sampleFlag(s.sample)}
       </div>
       ${s.events == null ? loading(360) : s.error ? errorState(s.error, 'the audit log') : html`<div class="table-scroll">
         <div class="audit-grid hz-head" style="padding: 0 14px 4px"><span>Time</span><span>Type</span><span>Event</span><span>Actor</span><span>Model · prompt</span><span>Sources</span><span>Outcome</span></div>

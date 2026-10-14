@@ -2,7 +2,7 @@
 
 import { api } from '../api.js';
 import {
-  html, render, icon, riskPill, riskBand, sampleFlag, checkRow, clock, age, cap,
+  html, render, icon, riskPill, riskBand, checkRow, clock, age, cap,
   loading, on, toast, toastError, ROLE_LABEL,
 } from '../ui.js';
 
@@ -18,7 +18,7 @@ const CHECK_LABEL = {
 };
 
 export async function mount(el, param, shell) {
-  const state = { filter: 'pending', items: null, sample: false, error: null, selected: param, detail: null, detailSample: false, detailError: null, deciding: false, result: null };
+  const state = { filter: 'pending', items: null, error: null, selected: param, detail: null, detailError: null, deciding: false, result: null };
 
   const draw = () => {
     const reason = el.querySelector('#reason')?.value ?? '';
@@ -33,7 +33,6 @@ export async function mount(el, param, shell) {
     try {
       const res = await api.get(`/approval-items${state.filter === 'all' ? '' : `?decision=${state.filter}`}`);
       state.items = (res.data || []).filter((i) => state.filter === 'all' || i.decision === state.filter);
-      state.sample = res.sample;
       state.error = null;
     } catch (err) {
       state.items = [];
@@ -52,7 +51,6 @@ export async function mount(el, param, shell) {
       const res = await api.get(`/approval-items/${encodeURIComponent(id)}`);
       if (id !== state.selected) return;
       state.detail = res.data;
-      state.detailSample = res.sample;
     } catch (err) {
       if (id !== state.selected) return;
       state.detailError = err;
@@ -105,7 +103,6 @@ function view(s, shell) {
           ${['pending', 'approved', 'rejected'].map((f) => html`<button type="button" data-filter="${f}" aria-pressed="${s.filter === f}">${cap(f)}</button>`)}
         </div>
       </div>
-      ${sampleFlag(s.sample)}
       ${s.items == null ? loading(260) : s.error ? html`<div class="empty"><strong>Could not load the queue</strong><span>${s.error.message}</span></div>`
         : s.items.length ? s.items.map((i) => queueItem(i, s.selected))
         : html`<div class="empty"><strong>Nothing ${s.filter}</strong><span>${s.filter === 'pending' ? 'New drafts and re-scores land here during a replay.' : 'Decisions appear here once made.'}</span></div>`}
@@ -151,7 +148,6 @@ function detail(s, shell) {
       </div>
       <a class="card-link" href="#/${isRescore ? `matrix/${d.draft?.row_code ?? ''}` : `hazop/${d.draft?.parent_row_code ?? ''}`}">${isRescore ? 'View in matrix' : 'View in register'}</a>
     </div>
-    ${s.detailSample ? html`<div>${sampleFlag(true, 'Illustrative item · endpoint pending')}</div>` : ''}
     ${decided ? html`<div role="status" class="status-banner${decided.decision === 'rejected' ? ' rejected' : ''}">
       ${icon(decided.decision === 'rejected' ? 'x' : 'check', { size: 18, width: 2.4 })}
       <span>${cap(decided.decision)}${decided.decided_by ? ` by ${decided.decided_by}` : ''}${decided.effect?.hazop_row_code ? `. ${decided.effect.hazop_row_code} v${decided.effect.version} is ${decided.effect.status}` : ''}${decided.audit_id ? `. Logged as ${decided.audit_id}` : ''}.</span>

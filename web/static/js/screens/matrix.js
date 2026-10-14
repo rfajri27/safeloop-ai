@@ -2,7 +2,7 @@
 
 import { api } from '../api.js';
 import {
-  html, render, icon, riskPill, riskBand, sampleFlag, clock, duration, cap, num,
+  html, render, icon, riskPill, riskBand, clock, duration, cap, num,
   loading, errorState, on, plural, bandLabel,
 } from '../ui.js';
 
@@ -15,7 +15,7 @@ export function subtitle(shell) {
 const SEVERITY = ['Minor', 'Moderate', 'Serious', 'Major', 'Catastrophic'];
 
 export async function mount(el, param, shell) {
-  const state = { rows: [], mode: 'live', selected: param, why: null, whySample: false, whyError: null, ruleSet: null };
+  const state = { rows: [], mode: 'live', selected: param, why: null, whyError: null, ruleSet: null };
   render(el, loading(620));
 
   try {
@@ -45,12 +45,8 @@ export async function mount(el, param, shell) {
       const res = await api.get(`/hazop-rows/${encodeURIComponent(code)}/why`);
       if (code !== state.selected) return;
       state.why = res.data;
-      state.whySample = res.sample;
     } catch (err) {
       if (code !== state.selected) return;
-      // Endpoint pending and no fixture: build what the register already knows.
-      state.why = err?.status === 501 ? whyFromRegister(state.rows.find((r) => r.row_code === code)) : null;
-      state.whySample = false;
       state.whyError = err;
     }
     draw();
@@ -69,18 +65,6 @@ export async function mount(el, param, shell) {
   });
 
   await loadWhy();
-}
-
-function whyFromRegister(row) {
-  if (!row) return null;
-  const cell = (l) => ({ likelihood: l, severity: row.severity, score: l * row.severity, band: riskBand(l * row.severity) });
-  return {
-    row_code: row.row_code, deviation: row.deviation, cause: row.cause,
-    design_basis: cell(row.likelihood_base), live: cell(row.likelihood_live),
-    trigger: null, rules: [], rule_set_version: null,
-    safeguards: row.safeguards.map((s) => ({ ref_code: s.ref_code, credited: s.credited, depends_on: [] })),
-    citations: [], partial: true,
-  };
 }
 
 function view(s) {
@@ -176,8 +160,6 @@ function drawer(s) {
   const moved = w.live.likelihood !== w.design_basis.likelihood || w.live.severity !== w.design_basis.severity;
   return html`<aside aria-label="Why it moved" class="card drawer">
     ${head}
-    ${s.whySample ? html`<div>${sampleFlag(true, 'Explanation from demo fixture · endpoint pending')}</div>` : ''}
-    ${w.partial ? html`<div>${sampleFlag(true, 'From the register · explanation endpoint pending')}</div>` : ''}
     <div class="compare">
       <div><span class="muted" style="font-size: 12px">Design basis</span>${riskPill(w.design_basis.score, w.design_basis.band)}<span class="mono ink-2" style="font-size: 12px">L${w.design_basis.likelihood} × S${w.design_basis.severity}</span></div>
       ${icon('arrow', { size: 20, stroke: moved ? '#3448F0' : '#C9D0DC' })}

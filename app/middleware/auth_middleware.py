@@ -9,7 +9,7 @@ Usage:
 """
 import uuid
 from typing import Optional
-from fastapi import Depends
+from fastapi import Depends, Query
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.schemas.auth_schema import CurrentUser
 from app.schemas.common_schema import UserRole
@@ -55,6 +55,16 @@ async def get_current_user(
         return CurrentUser(id=payload["sub"], role=payload["role"], name=payload.get("name", ""))
     except ValueError:  # bad UUID, or unknown role (pydantic ValidationError)
         response_error("Not authenticated", code=401)
+
+
+async def get_current_user_sse(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+    access_token: Optional[str] = Query(None, description="JWT for EventSource clients, which cannot send headers"),
+) -> CurrentUser:
+    """Like get_current_user, but also accepts `?access_token=` (GET SSE streams only)."""
+    if credentials is None and access_token:
+        credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials=access_token)
+    return await get_current_user(credentials)
 
 
 def require_role(*roles: UserRole, action: str = "perform this action"):

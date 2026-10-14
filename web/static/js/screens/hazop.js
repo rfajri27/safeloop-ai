@@ -2,7 +2,7 @@
 
 import { api } from '../api.js';
 import {
-  html, render, icon, riskPill, statusPill, sampleFlag, checkRow, titleCase,
+  html, render, icon, riskPill, statusPill, checkRow, titleCase,
   loading, errorState, on, plural, toastError,
 } from '../ui.js';
 
@@ -23,7 +23,7 @@ const KIND_LABEL = { new_scenario: 'new scenario', worsened: 'worsened', missed_
 export async function mount(el, param, shell) {
   const state = {
     nodes: [], selected: param, q: '', node: '', band: '', rescored: false,
-    runs: {}, running: false, sample: {},
+    runs: {}, running: false,
   };
   render(el, loading(620));
   try {
@@ -70,7 +70,6 @@ export async function mount(el, param, shell) {
     try {
       const res = await api.post(`/hazop-rows/${encodeURIComponent(code)}/red-team`, { max_proposals: 2 });
       state.runs[code] = res.data;
-      state.sample[code] = res.sample;
       shell.refresh();
     } catch (err) {
       toastError(err, 'The Red Team');
@@ -161,7 +160,6 @@ function drawer(s, shell) {
       </div>
       <button type="button" class="icon-btn soft" data-act="close" aria-label="Close drawer">${icon('x', { size: 16 })}</button>
     </div>
-    ${s.sample[row.row_code] ? html`<div>${sampleFlag(true, 'Illustrative result · endpoint pending')}</div>` : ''}
     ${s.running && !run ? loading(260) : run ? run.proposals.map(proposal) : html`<div class="panel">
       <span style="font-size: 14px; font-weight: 600">Look for what the study missed</span>
       <span class="ink-2" style="font-size: 13px; line-height: 1.5">The Red Team agent proposes up to 2 new or worsened scenarios for this row. The Judge then checks, in code, that every entity is in the asset model, every citation resolves and nothing reads like a control action. Only passed proposals reach the approval queue.</span>

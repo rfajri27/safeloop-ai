@@ -20,7 +20,8 @@ class AuditLogRepository(AppendOnlyRepository[AuditLog]):
         actions: Optional[Sequence[str]],
         actor_agent: Optional[AgentName],
         actor_user: Optional[str],
-        replay_run_id: Optional[str]
+        replay_run_id: Optional[str],
+        any_user: bool = False
     ):
         if actions:
             query = query.where(AuditLog.action.in_(actions))
@@ -28,6 +29,8 @@ class AuditLogRepository(AppendOnlyRepository[AuditLog]):
             query = query.where(AuditLog.actor_agent == actor_agent)
         if actor_user:
             query = query.where(AuditLog.actor_user == actor_user)
+        if any_user:
+            query = query.where(AuditLog.actor_user.is_not(None))
         if replay_run_id:
             query = query.where(AuditLog.replay_run_id == replay_run_id)
         return query
@@ -38,11 +41,12 @@ class AuditLogRepository(AppendOnlyRepository[AuditLog]):
         actor_agent: Optional[AgentName] = None,
         actor_user: Optional[str] = None,
         replay_run_id: Optional[str] = None,
+        any_user: bool = False,
         skip: int = 0,
         limit: int = 50
     ) -> Sequence[AuditLog]:
         """Audit events, newest first."""
-        query = self._filtered(select(AuditLog), actions, actor_agent, actor_user, replay_run_id)
+        query = self._filtered(select(AuditLog), actions, actor_agent, actor_user, replay_run_id, any_user)
         result = await self.session.execute(
             query.order_by(AuditLog.occurred_at.desc(), AuditLog.id.desc()).offset(skip).limit(limit)
         )
@@ -53,11 +57,12 @@ class AuditLogRepository(AppendOnlyRepository[AuditLog]):
         actions: Optional[Sequence[str]] = None,
         actor_agent: Optional[AgentName] = None,
         actor_user: Optional[str] = None,
-        replay_run_id: Optional[str] = None
+        replay_run_id: Optional[str] = None,
+        any_user: bool = False
     ) -> int:
         """Count with the same filters as list_filtered()."""
         query = self._filtered(
-            select(func.count()).select_from(AuditLog), actions, actor_agent, actor_user, replay_run_id
+            select(func.count()).select_from(AuditLog), actions, actor_agent, actor_user, replay_run_id, any_user
         )
         result = await self.session.execute(query)
         return result.scalar() or 0

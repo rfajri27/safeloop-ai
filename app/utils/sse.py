@@ -278,6 +278,42 @@ def sse_tool_call_result(
 
 
 # =============================================================================
+# SAFELOOP FRAMES (spec Section 5: id, event and data lines)
+# =============================================================================
+
+SSE_HEADERS = {
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    "X-Accel-Buffering": "no",
+}
+
+
+def sse_frame(event_id: Any, payload: dict) -> str:
+    """One frame: `id`, an `event` line equal to the AG-UI type, one JSON `data` line."""
+    return (
+        f"id: {event_id}\n"
+        f"event: {payload['type']}\n"
+        f"data: {json.dumps(payload, default=str, ensure_ascii=False)}\n\n"
+    )
+
+
+def sse_ping() -> str:
+    """Keep-alive comment sent when nothing else was sent for 15 s."""
+    return ": ping\n\n"
+
+
+class FrameCounter:
+    """Numbers the frames of one stream (`id` is monotonic per stream)."""
+
+    def __init__(self):
+        self.next_id = 0
+
+    def frame(self, event_type: str, **fields: Any) -> str:
+        self.next_id += 1
+        return sse_frame(self.next_id, {"type": event_type, **fields})
+
+
+# =============================================================================
 # UTILITY
 # =============================================================================
 

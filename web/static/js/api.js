@@ -1,5 +1,5 @@
 // API client for /api/v1: JWT auth, the {status, data, metadata, message} envelope,
-// AG-UI SSE parsing, and a fixture fallback for endpoints that still return 501.
+// and AG-UI SSE parsing. The UI shows only what the API returns.
 
 const BASE = '/api/v1';
 const TOKEN_KEY = 'safeloop.token';
@@ -72,67 +72,9 @@ async function request(method, path, { body, anonymous = false, headers = {} } =
   return { data: payload?.data, metadata: payload?.metadata, message: payload?.message };
 }
 
-// ---------- Fixture fallback ----------
-// Endpoints still stubbed on the server answer 501. For those, the UI shows the
-// demo fixtures from data/fixtures (same shapes as the API) and labels them as sample data.
-
-const FIXTURES = [
-  [/^\/units\/U100\/overview$/, 'units_U100_overview.json'],
-  [/^\/assets\/P-101$/, 'assets_P-101.json'],
-  [/^\/assets\/P-101\/trend\?sensor_tag=P101_DE_VIB_RMS/, 'assets_P-101_trend.json'],
-  [/^\/assets\/P-101\/health-history$/, 'assets_P-101_health-history.json'],
-  [/^\/hazop-rows$/, 'hazop-rows.json'],
-  [/^\/hazop-rows\/matrix$/, 'hazop-rows_matrix.json'],
-  [/^\/hazop-rows\/HZ-N1-003\/why$/, 'hazop-rows_HZ-N1-003_why.json'],
-  [/^\/hazop-rows\/HZ-N1-003\/red-team$/, 'red-team-run_HZ-N1-003.json'],
-  [/^\/risk-rule-sets\/active$/, 'risk-rule-sets_active.json'],
-  [/^\/approval-items(\?.*)?$/, 'approval-items.json'],
-  [/^\/approval-items\/(fixture-[\w-]+)$/, (m) => `approval-items_${m[1]}.json`],
-  [/^\/audit-events(\?.*)?$/, 'audit-events.json'],
-  [/^\/audit-events\/summary(\?.*)?$/, 'audit-events_summary.json'],
-  [/^\/eval-runs\/latest(\?.*)?$/, 'eval-runs_latest.json'],
-  [/^\/documents(\?.*)?$/, 'documents.json'],
-];
-
-function fixtureFor(path) {
-  for (const [re, file] of FIXTURES) {
-    const m = path.match(re);
-    if (m) return typeof file === 'function' ? file(m) : file;
-  }
-  return null;
-}
-
-async function loadFixture(file) {
-  const res = await fetch(`/static/fixtures/${file}`);
-  if (!res.ok) return null;
-  const payload = await res.json();
-  return { data: payload.data, metadata: payload.metadata, message: payload.message };
-}
-
-/** Is this error "the server has not built this endpoint yet"? */
-export const isNotImplemented = (err) => err instanceof ApiError && err.status === 501;
-
-/**
- * Call an endpoint; on 501 fall back to its fixture when one exists.
- * Resolves to { data, metadata, sample } where `sample` marks fixture data.
- */
-export async function call(method, path, body) {
-  try {
-    const out = await request(method, path, { body });
-    return { ...out, sample: false };
-  } catch (err) {
-    if (isNotImplemented(err)) {
-      const file = fixtureFor(path);
-      const fx = file && await loadFixture(file);
-      if (fx) return { ...fx, sample: true };
-    }
-    throw err;
-  }
-}
-
 export const api = {
-  get: (path) => call('GET', path),
-  post: (path, body) => call('POST', path, body ?? {}),
+  get: (path) => request('GET', path),
+  post: (path, body) => request('POST', path, { body: body ?? {} }),
   raw: request,
 };
 
@@ -158,11 +100,8 @@ export async function readEventStream(stream, onEvent) {
   }
 }
 
-/**
- * POST to a streaming endpoint. Resolves to { sample } once the stream ends.
- * On 501 it replays `fixtureStream` (an SSE text file) so the UI still demonstrates the flow.
- */
-export async function postStream(path, body, onEvent, { fixtureStream, signal } = {}) {
+/** POST to a streaming endpoint. Resolves once the stream ends. */
+export async function postStream(path, body, onEvent, { signal } = {}) {
   const res = await fetch(BASE + path, {
     method: 'POST',
     headers: {
@@ -174,11 +113,6 @@ export async function postStream(path, body, onEvent, { fixtureStream, signal } 
     signal,
   }).catch(() => { throw new ApiError(0, 'Cannot reach the SafeLoop API'); });
 
-  if (res.status === 501 && fixtureStream) {
-    const fx = await fetch(`/static/fixtures/${fixtureStream}`);
-    await readEventStream(slowStream(await fx.text()), onEvent);
-    return { sample: true };
-  }
   if (!res.ok) {
     let payload = null;
     try { payload = await res.json(); } catch { /* ignore */ }
@@ -186,19 +120,4 @@ export async function postStream(path, body, onEvent, { fixtureStream, signal } 
     throw new ApiError(res.status, payload?.message || `Request failed (${res.status})`, payload?.data);
   }
   await readEventStream(res.body, onEvent);
-  return { sample: false };
-}
-
-/** Turn fixture SSE text into a stream that yields one frame at a time, so playback looks live. */
-function slowStream(text) {
-  const frames = text.split(/\n\n/).filter((f) => f.trim() && !f.trim().startsWith('#'));
-  const encoder = new TextEncoder();
-  let i = 0;
-  return new ReadableStream({
-    async pull(controller) {
-      if (i >= frames.length) { controller.close(); return; }
-      await new Promise((r) => setTimeout(r, 90));
-      controller.enqueue(encoder.encode(frames[i++] + '\n\n'));
-    },
-  });
 }

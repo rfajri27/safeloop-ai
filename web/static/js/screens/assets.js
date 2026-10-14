@@ -3,7 +3,7 @@
 import { api } from '../api.js';
 import { lineChart, gauge } from '../charts.js';
 import {
-  html, render, icon, bandShape, riskPill, sampleFlag, clock, num, cap, titleCase,
+  html, render, icon, bandShape, riskPill, clock, num, cap, titleCase,
   loading, errorState, on, plural, bandLabel,
 } from '../ui.js';
 
@@ -13,7 +13,7 @@ export const subtitle = 'Health index, sensor trend and the HAZOP rows each asse
 const BAND_COLOR = { healthy: '#0B7A53', degraded: '#9A5B00', critical: '#C4281C' };
 
 export async function mount(el, tagParam, shell) {
-  const state = { list: [], tag: tagParam, detail: null, detailSample: false, detailError: null, sensor: null, trend: null, trendSample: false, trendError: null, history: null, historySample: false };
+  const state = { list: [], tag: tagParam, detail: null, detailError: null, sensor: null, trend: null, trendError: null, history: null };
   render(el, loading(560));
 
   try {
@@ -38,7 +38,6 @@ export async function mount(el, tagParam, shell) {
     try {
       const res = await api.get(`/assets/${encodeURIComponent(state.tag)}/trend?sensor_tag=${encodeURIComponent(state.sensor)}`);
       state.trend = res.data;
-      state.trendSample = res.sample;
     } catch (err) {
       state.trendError = err;
     }
@@ -52,14 +51,12 @@ export async function mount(el, tagParam, shell) {
     const [detail, history] = await Promise.allSettled([api.get(`/assets/${tag}`), api.get(`/assets/${tag}/health-history`)]);
     if (detail.status === 'fulfilled') {
       state.detail = detail.value.data;
-      state.detailSample = detail.value.sample;
       state.sensor = state.detail.sensor_tags?.[0]?.tag ?? null;
     } else {
       state.detailError = detail.reason;
     }
     if (history.status === 'fulfilled') {
       state.history = history.value.data;
-      state.historySample = history.value.sample;
     }
     await loadTrend();
   }
@@ -98,9 +95,9 @@ function view(s) {
 
 function hero(item, s) {
   const d = s.detail;
-  // Live list values win over fixture detail so the gauge always matches the overview tiles.
-  const hi = item?.health_index ?? (s.detailSample ? null : d?.health_index);
-  const band = item?.band ?? (s.detailSample ? null : d?.band);
+  // List values win so the gauge always matches the overview tiles.
+  const hi = item?.health_index ?? d?.health_index;
+  const band = item?.band ?? d?.band;
   const change = d?.last_band_change;
   const rows = d?.feeds_rows || [];
   const bandCounts = rows.reduce((acc, r) => ({ ...acc, [r.band]: (acc[r.band] || 0) + 1 }), {});
@@ -117,7 +114,6 @@ function hero(item, s) {
         ${d ? html`${titleCase(d.asset_class)} · Node ${d.node?.code?.replace(/^N/, '')} ${d.node?.name}${d.standby ? html` · Standby ${d.standby.tag} (${bandLabel(d.standby.band)}, ${num(d.standby.health_index)})` : ''}` : html`Node ${item?.node?.replace(/^N/, '') ?? '—'}`}
       </div>
       ${hi == null ? html`<span class="muted" style="font-size: 13px">Health is computed once a scenario replay is running.</span>` : ''}
-      ${s.detailSample ? html`<div>${sampleFlag(true, 'Detail from demo fixture · endpoint pending')}</div>` : ''}
     </div>
     <div class="hero-stat">
       <span class="muted" style="font-size: 13px">Band changed</span>
@@ -153,7 +149,7 @@ function trendCard(s) {
   else if (!pts.length) body = html`<div class="empty"><strong>No readings yet</strong><span>Start a replay to stream ${s.sensor}.</span></div>`;
   else {
     body = html`
-      <div class="big-reading"><span class="display">${num(last.y, 2)}</span><span class="muted" style="font-size: 14px">${t.eng_unit} · ${s.sensor} · hour ${last.x}</span>${sampleFlag(s.trendSample)}</div>
+      <div class="big-reading"><span class="display">${num(last.y, 2)}</span><span class="muted" style="font-size: 14px">${t.eng_unit} · ${s.sensor} · hour ${last.x}</span></div>
       ${lineChart(pts, {
         label: t.summary || `${s.sensor} trend`,
         thresholds,
@@ -194,7 +190,7 @@ function historyCard(s) {
       <p class="ink-2" style="font-size: 14px">${num(first.y)} → ${num(last.y)} over ${plural(last.x - first.x, 'replay hour')}${crossed ? `, crossing into ${cap(crossed.band)} at hour ${crossed.replay_hour}` : ''}. Computed in code by the Health Agent; the assistant can only quote it.</p>`;
   }
   return html`<section class="card">
-    <div class="card-head"><h2 class="card-title">Health index</h2>${sampleFlag(s.historySample)}</div>
+    <div class="card-head"><h2 class="card-title">Health index</h2></div>
     ${body}
   </section>`;
 }
@@ -217,6 +213,6 @@ function feedsCard(s) {
 
 function unavailable(err, what) {
   return err?.status === 501
-    ? html`<div class="empty"><strong>${what} is not available yet</strong><span>The server endpoint returns 501 and there is no demo fixture for this asset. P-101 has fixture data.</span></div>`
+    ? html`<div class="empty"><strong>${what} is not available yet</strong><span>The server endpoint is not implemented yet.</span></div>`
     : html`<div class="empty"><strong>Could not load ${what.toLowerCase()}</strong><span>${err?.message || 'Unknown error'}</span></div>`;
 }

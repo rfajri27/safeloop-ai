@@ -1,7 +1,7 @@
 // Evaluation: PoC gate and objectives PO-1 to PO-5 from the latest frozen run.
 
 import { api } from '../api.js';
-import { html, render, icon, sampleFlag, duration, loading, errorState, on, toast, toastError, num } from '../ui.js';
+import { html, render, icon, duration, loading, errorState, on, toast, toastError, num } from '../ui.js';
 
 export const title = 'Evaluation';
 export const subtitle = 'PoC objectives PO-1 to PO-5 from the frozen evaluation run';
@@ -24,14 +24,13 @@ const NFR = {
 };
 
 export async function mount(el, _param, shell) {
-  const state = { run: null, sample: false, error: null, starting: false };
+  const state = { run: null, error: null, starting: false };
   const draw = () => render(el, view(state, shell));
 
   async function load() {
     try {
       const res = await api.get('/eval-runs/latest?frozen=true');
       state.run = res.data;
-      state.sample = res.sample;
     } catch (err) {
       state.error = err;
     }
@@ -82,7 +81,6 @@ function view(s, shell) {
         <span class="display" style="font-size: 20px; font-weight: 600">PoC gate ${gate.name}: ${!hasRun ? 'not evaluated yet' : passedAll ? 'all objectives pass' : `${gate.passed} of ${gate.total} objectives pass`}</span>
         ${meta ? html`<span class="mono ink-2" style="font-size: 13px">${meta}</span>` : html`<span class="ink-2" style="font-size: 14px">No evaluation has been run yet. Values stay empty until <span class="mono">make eval</span> writes a real run.</span>`}
       </div>
-      ${sampleFlag(s.sample)}
       <button type="button" class="btn" data-act="run"${!allowed || s.starting ? html` disabled` : ''}${allowed ? '' : html` title="Only an admin or process safety engineer can start an evaluation"`}>${icon('bolt', { size: 18 })}${s.starting ? 'Starting…' : 'Run make eval'}</button>
     </section>
     <div class="po-grid-3">${objectives.slice(0, 3).map(poCard)}</div>

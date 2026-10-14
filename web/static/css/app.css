@@ -240,11 +240,6 @@ svg { flex-shrink: 0; }
 .band.critical { color: var(--crit); }
 .band.none { color: var(--muted); font-weight: 500; }
 
-.sample-flag {
-  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px;
-  border: 1px dashed var(--line-2); background: var(--surface); color: var(--ink-2); font-size: 12px; font-weight: 500; white-space: nowrap;
-}
-
 .check { display: flex; align-items: center; gap: 10px; font-size: 13px; }
 .check .mark {
   width: 20px; height: 20px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;

@@ -37,7 +37,6 @@ const PERSONAS = [
 /** Shared state every screen can read. `shell.overview` is refreshed in the background. */
 export const shell = {
   overview: null,
-  overviewSample: false,
   health: null,
   get user() { return auth.user; },
   can(roles) { return roles.includes(auth.user?.role); },
@@ -206,7 +205,6 @@ async function refreshShell() {
   ]);
   if (ov.status === 'fulfilled') {
     shell.overview = ov.value.data;
-    shell.overviewSample = ov.value.sample;
   }
   shell.health = health.status === 'fulfilled' ? health.value.data : health.reason?.data ?? null;
   renderReplay();

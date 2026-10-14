@@ -38,6 +38,14 @@ class AgentRunRepository(BaseRepository[AgentRun]):
         )
         return result.scalars().all()
 
+    async def get_latest(self, agent: AgentName, since: Optional[datetime] = None) -> Optional[AgentRun]:
+        """Most recent run of an agent outside evaluation runs (overview Red Team summary)."""
+        query = select(AgentRun).where(AgentRun.agent == agent, ~AgentRun.input.contains({"source": "eval"}))
+        if since:
+            query = query.where(AgentRun.started_at >= since)
+        result = await self.session.execute(query.order_by(AgentRun.started_at.desc()).limit(1))
+        return result.scalar_one_or_none()
+
     async def list_latencies(self, agent: AgentName, since: Optional[datetime] = None) -> Sequence[int]:
         """latency_ms of successful runs (p95 check, NFR-03)."""
         query = select(AgentRun.latency_ms).where(

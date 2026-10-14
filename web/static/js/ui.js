@@ -106,10 +106,6 @@ export function statusPill(status) {
   return html`<span class="pill sm ${cls}">${label}</span>`;
 }
 
-export function sampleFlag(show, label = 'Sample data · endpoint pending') {
-  return show ? html`<span class="sample-flag" title="This endpoint returns 501 on the server, so the UI shows the demo fixture instead.">${icon('doc', { size: 14 })}${label}</span>` : '';
-}
-
 export function checkRow({ passed, label, detail }) {
   return html`<div class="check${passed ? '' : ' fail'}">
     <span class="mark">${icon(passed ? 'check' : 'x', { size: 12, width: 2.6 })}</span>
