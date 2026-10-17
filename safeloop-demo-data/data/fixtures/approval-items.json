@@ -1,0 +1,42 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "id": "fixture-proposal-1",
+      "artifact_type": "hazop_change",
+      "title": "HZ-N1-003a · strainer common cause",
+      "source": "Red Team · redteam.v1 · Node 1",
+      "judge": "pass",
+      "confidence": "medium",
+      "decision": "pending",
+      "age_s": 0.3,
+      "_fixture_note": "Illustrative example of a Red Team proposal, written by hand from golden item GH-01. Not model output."
+    },
+    {
+      "id": "fixture-rescore-1",
+      "artifact_type": "risk_rescore",
+      "title": "HZ-N1-003 · Medium → High",
+      "source": "Risk Engine · R-L-01 v1",
+      "judge": null,
+      "confidence": "high",
+      "decision": "pending",
+      "age_s": 0.5
+    },
+    {
+      "id": "fixture-rescore-2",
+      "artifact_type": "risk_rescore",
+      "title": "HZ-N1-005 · Low → Medium",
+      "source": "Risk Engine · R-L-01 v1",
+      "judge": null,
+      "confidence": "high",
+      "decision": "pending",
+      "age_s": 0.5
+    }
+  ],
+  "metadata": {
+    "total": 3,
+    "skip": 0,
+    "limit": 50
+  },
+  "message": "Success"
+}

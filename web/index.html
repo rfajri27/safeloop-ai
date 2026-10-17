@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeLoop AI</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='11' fill='%233448F0'/%3E%3Ccircle cx='17' cy='17' r='8' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-dasharray='38 12.3' transform='rotate(-50 17 17)'/%3E%3Ccircle cx='23.1' cy='11.9' r='2.4' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+
+<div id="login-root" hidden></div>
+
+<div class="shell" id="app" hidden>
+  <nav class="sidebar" aria-label="Primary">
+    <a class="brand" href="#/overview">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="11" fill="#3448F0"></rect><circle cx="17" cy="17" r="8" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="38 12.3" transform="rotate(-50 17 17)"></circle><circle cx="23.1" cy="11.9" r="2.4" fill="#FFFFFF"></circle></svg>
+      <span style="display: flex; flex-direction: column">
+        <span class="brand-name">SafeLoop <span>AI</span></span>
+        <span class="brand-sub">Unit 100</span>
+      </span>
+    </a>
+    <div class="nav-group" id="nav-main"></div>
+    <div class="nav-group" id="nav-gov"></div>
+    <div class="sidebar-foot">
+      <div class="advisory">
+        <div class="advisory-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3448F0" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
+          Advisory only
+        </div>
+        <p>No path to DCS, PLC or SIS. Scores are indicative, for engineering review.</p>
+      </div>
+      <button type="button" class="user-chip" id="user-chip" aria-label="Switch user">
+        <span class="avatar" id="user-avatar">?</span>
+        <span><span class="user-name" id="user-name">—</span><span class="user-role" id="user-role">Switch user</span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="main">
+    <header class="page-header">
+      <div class="page-title">
+        <h1 id="page-title">SafeLoop AI</h1>
+        <p id="page-subtitle"></p>
+      </div>
+      <div id="replay-root"></div>
+    </header>
+    <div id="view" class="stack" aria-live="polite"></div>
+  </main>
+</div>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

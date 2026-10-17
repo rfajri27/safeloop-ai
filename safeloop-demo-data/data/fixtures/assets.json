@@ -1,0 +1,65 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "tag": "P-101",
+      "name": "Reflux pump",
+      "node": "N1",
+      "health_index": 61,
+      "band": "degraded",
+      "origin": "public_proxy",
+      "source_dataset": "NASA IMS bearing test 2"
+    },
+    {
+      "tag": "P-101B",
+      "name": "Standby reflux pump",
+      "node": "N1",
+      "health_index": 100,
+      "band": "healthy",
+      "origin": "public_proxy",
+      "source_dataset": "NASA IMS bearing test 2"
+    },
+    {
+      "tag": "V-201",
+      "name": "Reflux drum",
+      "node": "N1",
+      "health_index": 100,
+      "band": "healthy",
+      "origin": "public_proxy",
+      "source_dataset": "Tennessee Eastman Process"
+    },
+    {
+      "tag": "FV-201",
+      "name": "Reflux flow control valve",
+      "node": "N1",
+      "health_index": 99,
+      "band": "healthy",
+      "origin": "public_proxy",
+      "source_dataset": "Tennessee Eastman Process"
+    },
+    {
+      "tag": "E-301",
+      "name": "Overhead condenser",
+      "node": "N2",
+      "health_index": 100,
+      "band": "healthy",
+      "origin": "public_proxy",
+      "source_dataset": "Tennessee Eastman Process"
+    },
+    {
+      "tag": "TV-301",
+      "name": "Condenser cooling-water valve",
+      "node": "N2",
+      "health_index": 100,
+      "band": "healthy",
+      "origin": "public_proxy",
+      "source_dataset": "Tennessee Eastman Process"
+    }
+  ],
+  "metadata": {
+    "total": 6,
+    "skip": 0,
+    "limit": 50
+  },
+  "message": "Success"
+}

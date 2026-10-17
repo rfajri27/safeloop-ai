@@ -22,21 +22,26 @@ ENV/
 *.swp
 *.swo
 
-# Environment
+# Environment (secrets are injected at runtime, never baked in)
 .env
 .env.*
 !.env.example
+
+# Local state
+.chroma/
+local/
 
 # Docker
 Dockerfile*
 docker-compose*.yml
 
 # Testing
+tests/
 .pytest_cache/
 .coverage
 htmlcov/
 
 # Misc
-*.md
-!README.md
+# Note: do not ignore *.md, the demo corpus (safeloop-demo-data/data/corpus) is Markdown.
+safeloop-demo-data/docs/
 .gemini/

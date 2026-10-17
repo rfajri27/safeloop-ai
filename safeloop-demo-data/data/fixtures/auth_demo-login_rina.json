@@ -1,0 +1,15 @@
+{
+  "status": 1,
+  "data": {
+    "access_token": "fixture-token",
+    "token_type": "bearer",
+    "expires_in": 28800,
+    "user": {
+      "id": "fixture-user-rina",
+      "display_name": "Rina",
+      "role": "process_safety_engineer"
+    }
+  },
+  "metadata": null,
+  "message": "Success"
+}

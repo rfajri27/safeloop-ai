@@ -1,0 +1,10 @@
+{
+  "_meta": { "description": "Demo users for POST /auth/demo-login. Fictional people; emails use the reserved example.com domain.", "is_synthetic": true },
+  "users": [
+    { "handle": "rina", "display_name": "Rina", "email": "rina@example.com", "role": "process_safety_engineer", "title": "Process Safety Eng." },
+    { "handle": "dimas", "display_name": "Dimas", "email": "dimas@example.com", "role": "reliability_engineer", "title": "Reliability Eng." },
+    { "handle": "agus", "display_name": "Agus", "email": "agus@example.com", "role": "operator", "title": "Control-room Operator" },
+    { "handle": "auditor", "display_name": "Maya", "email": "maya@example.com", "role": "auditor", "title": "HSE Auditor" },
+    { "handle": "admin", "display_name": "Budi", "email": "budi@example.com", "role": "admin", "title": "Platform Admin" }
+  ]
+}

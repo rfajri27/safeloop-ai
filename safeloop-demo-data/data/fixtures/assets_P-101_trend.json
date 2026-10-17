@@ -1,0 +1,724 @@
+{
+  "status": 1,
+  "data": {
+    "sensor_tag": "P101_DE_VIB_RMS",
+    "eng_unit": "mm/s",
+    "alert_high": 4.5,
+    "alert_high_tightened": 3.5,
+    "origin": "public_proxy",
+    "source_dataset": "NASA IMS bearing test 2",
+    "points": [
+      {
+        "replay_hour": 0,
+        "value": 2.827
+      },
+      {
+        "replay_hour": 1,
+        "value": 2.822
+      },
+      {
+        "replay_hour": 2,
+        "value": 2.849
+      },
+      {
+        "replay_hour": 3,
+        "value": 2.848
+      },
+      {
+        "replay_hour": 4,
+        "value": 2.858
+      },
+      {
+        "replay_hour": 5,
+        "value": 2.868
+      },
+      {
+        "replay_hour": 6,
+        "value": 2.833
+      },
+      {
+        "replay_hour": 7,
+        "value": 2.859
+      },
+      {
+        "replay_hour": 8,
+        "value": 2.84
+      },
+      {
+        "replay_hour": 9,
+        "value": 2.84
+      },
+      {
+        "replay_hour": 10,
+        "value": 2.816
+      },
+      {
+        "replay_hour": 11,
+        "value": 2.829
+      },
+      {
+        "replay_hour": 12,
+        "value": 2.825
+      },
+      {
+        "replay_hour": 13,
+        "value": 2.804
+      },
+      {
+        "replay_hour": 14,
+        "value": 2.841
+      },
+      {
+        "replay_hour": 15,
+        "value": 2.799
+      },
+      {
+        "replay_hour": 16,
+        "value": 2.781
+      },
+      {
+        "replay_hour": 17,
+        "value": 2.82
+      },
+      {
+        "replay_hour": 18,
+        "value": 2.806
+      },
+      {
+        "replay_hour": 19,
+        "value": 2.78
+      },
+      {
+        "replay_hour": 20,
+        "value": 2.8
+      },
+      {
+        "replay_hour": 21,
+        "value": 2.802
+      },
+      {
+        "replay_hour": 22,
+        "value": 2.775
+      },
+      {
+        "replay_hour": 23,
+        "value": 2.799
+      },
+      {
+        "replay_hour": 24,
+        "value": 2.789
+      },
+      {
+        "replay_hour": 25,
+        "value": 2.792
+      },
+      {
+        "replay_hour": 26,
+        "value": 2.777
+      },
+      {
+        "replay_hour": 27,
+        "value": 2.779
+      },
+      {
+        "replay_hour": 28,
+        "value": 2.823
+      },
+      {
+        "replay_hour": 29,
+        "value": 2.828
+      },
+      {
+        "replay_hour": 30,
+        "value": 2.776
+      },
+      {
+        "replay_hour": 31,
+        "value": 2.754
+      },
+      {
+        "replay_hour": 32,
+        "value": 2.802
+      },
+      {
+        "replay_hour": 33,
+        "value": 2.786
+      },
+      {
+        "replay_hour": 34,
+        "value": 2.789
+      },
+      {
+        "replay_hour": 35,
+        "value": 2.755
+      },
+      {
+        "replay_hour": 36,
+        "value": 2.792
+      },
+      {
+        "replay_hour": 37,
+        "value": 2.801
+      },
+      {
+        "replay_hour": 38,
+        "value": 2.808
+      },
+      {
+        "replay_hour": 39,
+        "value": 2.803
+      },
+      {
+        "replay_hour": 40,
+        "value": 2.815
+      },
+      {
+        "replay_hour": 41,
+        "value": 2.794
+      },
+      {
+        "replay_hour": 42,
+        "value": 2.775
+      },
+      {
+        "replay_hour": 43,
+        "value": 2.761
+      },
+      {
+        "replay_hour": 44,
+        "value": 2.773
+      },
+      {
+        "replay_hour": 45,
+        "value": 2.801
+      },
+      {
+        "replay_hour": 46,
+        "value": 2.795
+      },
+      {
+        "replay_hour": 47,
+        "value": 2.782
+      },
+      {
+        "replay_hour": 48,
+        "value": 2.801
+      },
+      {
+        "replay_hour": 49,
+        "value": 2.771
+      },
+      {
+        "replay_hour": 50,
+        "value": 2.78
+      },
+      {
+        "replay_hour": 51,
+        "value": 2.8
+      },
+      {
+        "replay_hour": 52,
+        "value": 2.818
+      },
+      {
+        "replay_hour": 53,
+        "value": 2.817
+      },
+      {
+        "replay_hour": 54,
+        "value": 2.793
+      },
+      {
+        "replay_hour": 55,
+        "value": 2.799
+      },
+      {
+        "replay_hour": 56,
+        "value": 2.805
+      },
+      {
+        "replay_hour": 57,
+        "value": 2.82
+      },
+      {
+        "replay_hour": 58,
+        "value": 2.798
+      },
+      {
+        "replay_hour": 59,
+        "value": 2.786
+      },
+      {
+        "replay_hour": 60,
+        "value": 2.768
+      },
+      {
+        "replay_hour": 61,
+        "value": 2.792
+      },
+      {
+        "replay_hour": 62,
+        "value": 2.778
+      },
+      {
+        "replay_hour": 63,
+        "value": 2.817
+      },
+      {
+        "replay_hour": 64,
+        "value": 2.796
+      },
+      {
+        "replay_hour": 65,
+        "value": 2.791
+      },
+      {
+        "replay_hour": 66,
+        "value": 2.814
+      },
+      {
+        "replay_hour": 67,
+        "value": 2.837
+      },
+      {
+        "replay_hour": 68,
+        "value": 2.79
+      },
+      {
+        "replay_hour": 69,
+        "value": 2.808
+      },
+      {
+        "replay_hour": 70,
+        "value": 2.782
+      },
+      {
+        "replay_hour": 71,
+        "value": 2.802
+      },
+      {
+        "replay_hour": 72,
+        "value": 2.827
+      },
+      {
+        "replay_hour": 73,
+        "value": 2.792
+      },
+      {
+        "replay_hour": 74,
+        "value": 2.815
+      },
+      {
+        "replay_hour": 75,
+        "value": 2.816
+      },
+      {
+        "replay_hour": 76,
+        "value": 2.802
+      },
+      {
+        "replay_hour": 77,
+        "value": 2.798
+      },
+      {
+        "replay_hour": 78,
+        "value": 2.812
+      },
+      {
+        "replay_hour": 79,
+        "value": 2.796
+      },
+      {
+        "replay_hour": 80,
+        "value": 2.812
+      },
+      {
+        "replay_hour": 81,
+        "value": 2.761
+      },
+      {
+        "replay_hour": 82,
+        "value": 2.818
+      },
+      {
+        "replay_hour": 83,
+        "value": 2.792
+      },
+      {
+        "replay_hour": 84,
+        "value": 2.816
+      },
+      {
+        "replay_hour": 85,
+        "value": 2.776
+      },
+      {
+        "replay_hour": 86,
+        "value": 2.804
+      },
+      {
+        "replay_hour": 87,
+        "value": 2.8
+      },
+      {
+        "replay_hour": 88,
+        "value": 2.79
+      },
+      {
+        "replay_hour": 89,
+        "value": 2.8
+      },
+      {
+        "replay_hour": 90,
+        "value": 2.766
+      },
+      {
+        "replay_hour": 91,
+        "value": 2.808
+      },
+      {
+        "replay_hour": 92,
+        "value": 2.793
+      },
+      {
+        "replay_hour": 93,
+        "value": 2.784
+      },
+      {
+        "replay_hour": 94,
+        "value": 2.759
+      },
+      {
+        "replay_hour": 95,
+        "value": 2.835
+      },
+      {
+        "replay_hour": 96,
+        "value": 2.824
+      },
+      {
+        "replay_hour": 97,
+        "value": 2.759
+      },
+      {
+        "replay_hour": 98,
+        "value": 2.759
+      },
+      {
+        "replay_hour": 99,
+        "value": 2.768
+      },
+      {
+        "replay_hour": 100,
+        "value": 2.784
+      },
+      {
+        "replay_hour": 101,
+        "value": 2.804
+      },
+      {
+        "replay_hour": 102,
+        "value": 2.793
+      },
+      {
+        "replay_hour": 103,
+        "value": 2.791
+      },
+      {
+        "replay_hour": 104,
+        "value": 2.779
+      },
+      {
+        "replay_hour": 105,
+        "value": 2.8
+      },
+      {
+        "replay_hour": 106,
+        "value": 2.808
+      },
+      {
+        "replay_hour": 107,
+        "value": 2.816
+      },
+      {
+        "replay_hour": 108,
+        "value": 2.819
+      },
+      {
+        "replay_hour": 109,
+        "value": 2.787
+      },
+      {
+        "replay_hour": 110,
+        "value": 2.845
+      },
+      {
+        "replay_hour": 111,
+        "value": 2.839
+      },
+      {
+        "replay_hour": 112,
+        "value": 2.85
+      },
+      {
+        "replay_hour": 113,
+        "value": 2.794
+      },
+      {
+        "replay_hour": 114,
+        "value": 2.788
+      },
+      {
+        "replay_hour": 115,
+        "value": 2.812
+      },
+      {
+        "replay_hour": 116,
+        "value": 2.802
+      },
+      {
+        "replay_hour": 117,
+        "value": 2.783
+      },
+      {
+        "replay_hour": 118,
+        "value": 2.766
+      },
+      {
+        "replay_hour": 119,
+        "value": 2.775
+      },
+      {
+        "replay_hour": 120,
+        "value": 2.808
+      },
+      {
+        "replay_hour": 121,
+        "value": 2.804
+      },
+      {
+        "replay_hour": 122,
+        "value": 2.804
+      },
+      {
+        "replay_hour": 123,
+        "value": 2.85
+      },
+      {
+        "replay_hour": 124,
+        "value": 2.836
+      },
+      {
+        "replay_hour": 125,
+        "value": 2.846
+      },
+      {
+        "replay_hour": 126,
+        "value": 2.804
+      },
+      {
+        "replay_hour": 127,
+        "value": 2.842
+      },
+      {
+        "replay_hour": 128,
+        "value": 2.867
+      },
+      {
+        "replay_hour": 129,
+        "value": 2.835
+      },
+      {
+        "replay_hour": 130,
+        "value": 3.029
+      },
+      {
+        "replay_hour": 131,
+        "value": 3.048
+      },
+      {
+        "replay_hour": 132,
+        "value": 3.059
+      },
+      {
+        "replay_hour": 133,
+        "value": 3.119
+      },
+      {
+        "replay_hour": 134,
+        "value": 3.138
+      },
+      {
+        "replay_hour": 135,
+        "value": 3.161
+      },
+      {
+        "replay_hour": 136,
+        "value": 3.192
+      },
+      {
+        "replay_hour": 137,
+        "value": 3.172
+      },
+      {
+        "replay_hour": 138,
+        "value": 3.175
+      },
+      {
+        "replay_hour": 139,
+        "value": 3.221
+      },
+      {
+        "replay_hour": 140,
+        "value": 3.215
+      },
+      {
+        "replay_hour": 141,
+        "value": 3.258
+      },
+      {
+        "replay_hour": 142,
+        "value": 3.288
+      },
+      {
+        "replay_hour": 143,
+        "value": 3.292
+      },
+      {
+        "replay_hour": 144,
+        "value": 3.281
+      },
+      {
+        "replay_hour": 145,
+        "value": 3.314
+      },
+      {
+        "replay_hour": 146,
+        "value": 3.317
+      },
+      {
+        "replay_hour": 147,
+        "value": 3.351
+      },
+      {
+        "replay_hour": 148,
+        "value": 3.412
+      },
+      {
+        "replay_hour": 149,
+        "value": 3.455
+      },
+      {
+        "replay_hour": 150,
+        "value": 3.475
+      },
+      {
+        "replay_hour": 151,
+        "value": 3.456
+      },
+      {
+        "replay_hour": 152,
+        "value": 3.484
+      },
+      {
+        "replay_hour": 153,
+        "value": 3.482
+      },
+      {
+        "replay_hour": 154,
+        "value": 3.47
+      },
+      {
+        "replay_hour": 155,
+        "value": 3.499
+      },
+      {
+        "replay_hour": 156,
+        "value": 3.572
+      },
+      {
+        "replay_hour": 157,
+        "value": 3.553
+      },
+      {
+        "replay_hour": 158,
+        "value": 3.815
+      },
+      {
+        "replay_hour": 159,
+        "value": 3.834
+      },
+      {
+        "replay_hour": 160,
+        "value": 3.806
+      },
+      {
+        "replay_hour": 161,
+        "value": 3.839
+      },
+      {
+        "replay_hour": 162,
+        "value": 3.827
+      },
+      {
+        "replay_hour": 163,
+        "value": 3.818
+      },
+      {
+        "replay_hour": 164,
+        "value": 3.762
+      },
+      {
+        "replay_hour": 165,
+        "value": 3.788
+      },
+      {
+        "replay_hour": 166,
+        "value": 3.782
+      },
+      {
+        "replay_hour": 167,
+        "value": 3.841
+      },
+      {
+        "replay_hour": 168,
+        "value": 3.837
+      },
+      {
+        "replay_hour": 169,
+        "value": 3.881
+      },
+      {
+        "replay_hour": 170,
+        "value": 3.926
+      },
+      {
+        "replay_hour": 171,
+        "value": 5.186
+      },
+      {
+        "replay_hour": 172,
+        "value": 6.245
+      },
+      {
+        "replay_hour": 173,
+        "value": 6.149
+      },
+      {
+        "replay_hour": 174,
+        "value": 6.14
+      },
+      {
+        "replay_hour": 175,
+        "value": 6.021
+      },
+      {
+        "replay_hour": 176,
+        "value": 5.962
+      }
+    ],
+    "summary": "Vibration rose from 3.9 to 6.0 mm/s over the last 6 replay hours."
+  },
+  "metadata": null,
+  "message": "Success"
+}

@@ -1,5 +1,5 @@
 """JWT utility functions for token creation and validation."""
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 import jwt
 from config.settings import env
@@ -22,12 +22,12 @@ class JwtUtils:
         """
         to_encode = data.copy()
         if expires_delta:
-            expire = datetime.now() + expires_delta
+            expire = datetime.now(timezone.utc) + expires_delta
         else:
             if data.get("token_type") == "refresh":
-                expire = datetime.now() + timedelta(minutes=env.jwt_expire_minutes*60)
+                expire = datetime.now(timezone.utc) + timedelta(minutes=env.jwt_expire_minutes*60)
             else:
-                expire = datetime.now() + timedelta(minutes=env.jwt_expire_minutes)
+                expire = datetime.now(timezone.utc) + timedelta(minutes=env.jwt_expire_minutes)
 
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, env.jwt_secret_key, algorithm=env.jwt_algorithm)

@@ -1,0 +1,28 @@
+id: 1
+event: CUSTOM
+data: {"type": "CUSTOM", "name": "health_band_changed", "value": {"replay_hour": 174, "type": "health_band_changed", "asset_tag": "P-101", "previous_band": "healthy", "band": "degraded", "health_index": 66, "trigger_tag": "P101_DE_VIB_RMS", "trigger_value": 6.14}}
+
+id: 2
+event: CUSTOM
+data: {"type": "CUSTOM", "name": "risk_rescored", "value": {"replay_hour": 174, "type": "risk_rescored", "row_code": "HZ-N1-003", "score_old": 8, "score_new": 12, "likelihood_new": 3, "band_new": "high", "rules_applied": ["R-L-01"], "safeguards_lost": [], "trigger_asset": "P-101", "rule_set_version": "v1", "audit_id": "AUD-0003", "severity": 4}}
+
+id: 3
+event: CUSTOM
+data: {"type": "CUSTOM", "name": "risk_rescored", "value": {"replay_hour": 174, "type": "risk_rescored", "row_code": "HZ-N1-005", "score_old": 3, "score_new": 6, "likelihood_new": 2, "band_new": "medium", "rules_applied": ["R-L-01"], "safeguards_lost": [], "trigger_asset": "P-101", "rule_set_version": "v1", "audit_id": "AUD-0004", "severity": 3}}
+
+id: 4
+event: CUSTOM
+data: {"type": "CUSTOM", "name": "health_band_changed", "value": {"replay_hour": 235, "type": "health_band_changed", "asset_tag": "P-101", "previous_band": "degraded", "band": "critical", "health_index": 44, "trigger_tag": "P101_DE_VIB_RMS", "trigger_value": 8.827}}
+
+id: 5
+event: CUSTOM
+data: {"type": "CUSTOM", "name": "risk_rescored", "value": {"replay_hour": 235, "type": "risk_rescored", "row_code": "HZ-N1-003", "score_old": 12, "score_new": 16, "likelihood_new": 4, "band_new": "extreme", "rules_applied": ["R-L-02"], "safeguards_lost": [], "trigger_asset": "P-101", "rule_set_version": "v1"}}
+
+id: 6
+event: CUSTOM
+data: {"type": "CUSTOM", "name": "risk_rescored", "value": {"replay_hour": 235, "type": "risk_rescored", "row_code": "HZ-N1-005", "score_old": 6, "score_new": 9, "likelihood_new": 3, "band_new": "medium", "rules_applied": ["R-L-02"], "safeguards_lost": [], "trigger_asset": "P-101", "rule_set_version": "v1"}}
+
+id: 7
+event: CUSTOM
+data: {"type": "CUSTOM", "name": "trip", "value": {"replay_hour": 236, "type": "trip", "asset_tag": "P-101", "detail": "P-101 vibration reached 11.2 mm/s; P-101B takes over reflux duty"}}
+

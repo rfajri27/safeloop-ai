@@ -1,0 +1,11 @@
+{
+  "status": 1,
+  "data": {
+    "complete_records_pct": 100,
+    "events": 4,
+    "blocked_by_judge": 0,
+    "refused": 0
+  },
+  "metadata": null,
+  "message": "Success"
+}

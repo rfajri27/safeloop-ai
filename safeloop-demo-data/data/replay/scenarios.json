@@ -1,0 +1,166 @@
+{
+  "replay_hours": 240,
+  "seconds_per_replay_hour_at_1x": 2.0,
+  "speeds": [
+    1,
+    3,
+    8
+  ],
+  "health_model_version": "hi.v1",
+  "rule_set_version": "v1",
+  "scenarios": {
+    "S1": {
+      "name": "P-101 bearing degradation",
+      "label": "S1 · P-101 bearing",
+      "source": "NASA IMS bearing test 2 (bearing 1, outer-race failure), 980 snapshots from 12 to 19 Feb 2004, about 4.1 snapshots (41 min) per replay hour; process tags from the TEP normal run d00_te.dat",
+      "files": [
+        "S1.csv",
+        "S1.parquet"
+      ],
+      "trip_hour": 236,
+      "expected_events": [
+        {
+          "replay_hour": 174,
+          "type": "health_band_changed",
+          "asset_tag": "P-101",
+          "previous_band": "healthy",
+          "band": "degraded",
+          "health_index": 66,
+          "trigger_tag": "P101_DE_VIB_RMS",
+          "trigger_value": 6.14
+        },
+        {
+          "replay_hour": 174,
+          "type": "risk_rescored",
+          "row_code": "HZ-N1-003",
+          "score_old": 8,
+          "score_new": 12,
+          "likelihood_new": 3,
+          "band_new": "high",
+          "rules_applied": [
+            "R-L-01"
+          ],
+          "safeguards_lost": [],
+          "trigger_asset": "P-101",
+          "rule_set_version": "v1"
+        },
+        {
+          "replay_hour": 174,
+          "type": "risk_rescored",
+          "row_code": "HZ-N1-005",
+          "score_old": 3,
+          "score_new": 6,
+          "likelihood_new": 2,
+          "band_new": "medium",
+          "rules_applied": [
+            "R-L-01"
+          ],
+          "safeguards_lost": [],
+          "trigger_asset": "P-101",
+          "rule_set_version": "v1"
+        },
+        {
+          "replay_hour": 235,
+          "type": "health_band_changed",
+          "asset_tag": "P-101",
+          "previous_band": "degraded",
+          "band": "critical",
+          "health_index": 44,
+          "trigger_tag": "P101_DE_VIB_RMS",
+          "trigger_value": 8.827
+        },
+        {
+          "replay_hour": 235,
+          "type": "risk_rescored",
+          "row_code": "HZ-N1-003",
+          "score_old": 12,
+          "score_new": 16,
+          "likelihood_new": 4,
+          "band_new": "extreme",
+          "rules_applied": [
+            "R-L-02"
+          ],
+          "safeguards_lost": [],
+          "trigger_asset": "P-101",
+          "rule_set_version": "v1"
+        },
+        {
+          "replay_hour": 235,
+          "type": "risk_rescored",
+          "row_code": "HZ-N1-005",
+          "score_old": 6,
+          "score_new": 9,
+          "likelihood_new": 3,
+          "band_new": "medium",
+          "rules_applied": [
+            "R-L-02"
+          ],
+          "safeguards_lost": [],
+          "trigger_asset": "P-101",
+          "rule_set_version": "v1"
+        },
+        {
+          "replay_hour": 236,
+          "type": "trip",
+          "asset_tag": "P-101",
+          "detail": "P-101 vibration reached 11.2 mm/s; P-101B takes over reflux duty"
+        }
+      ]
+    },
+    "S2": {
+      "name": "E-301 cooling loss",
+      "label": "S2 · E-301 cooling",
+      "source": "Tennessee Eastman Process test run d05_te.dat, IDV(5) condenser cooling-water inlet temperature step introduced at sample 160 (replay hour 40); 4 samples (12 min) per replay hour",
+      "files": [
+        "S2.csv",
+        "S2.parquet"
+      ],
+      "fault_onset_hour": 40,
+      "expected_events": [
+        {
+          "replay_hour": 47,
+          "type": "health_band_changed",
+          "asset_tag": "E-301",
+          "previous_band": "healthy",
+          "band": "degraded",
+          "health_index": 76,
+          "trigger_tag": "TV301_POS",
+          "trigger_value": 66.525
+        },
+        {
+          "replay_hour": 47,
+          "type": "risk_rescored",
+          "row_code": "HZ-N2-001",
+          "score_old": 6,
+          "score_new": 12,
+          "likelihood_new": 4,
+          "band_new": "high",
+          "rules_applied": [
+            "R-L-01",
+            "R-S-01"
+          ],
+          "safeguards_lost": [
+            "TIC-301 loop"
+          ],
+          "trigger_asset": "E-301",
+          "rule_set_version": "v1"
+        },
+        {
+          "replay_hour": 47,
+          "type": "risk_rescored",
+          "row_code": "HZ-N2-002",
+          "score_old": 5,
+          "score_new": 10,
+          "likelihood_new": 2,
+          "band_new": "high",
+          "rules_applied": [
+            "R-L-01"
+          ],
+          "safeguards_lost": [],
+          "trigger_asset": "E-301",
+          "rule_set_version": "v1"
+        }
+      ]
+    }
+  }
+}

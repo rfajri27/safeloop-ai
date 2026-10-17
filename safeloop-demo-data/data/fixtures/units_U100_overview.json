@@ -1,0 +1,162 @@
+{
+  "status": 1,
+  "data": {
+    "unit": {
+      "code": "U100",
+      "name": "Solvent Recovery",
+      "nodes": 2,
+      "assets": 6,
+      "hazop_rows": 8
+    },
+    "replay": {
+      "run_id": "fixture-run-s1",
+      "scenario": "S1",
+      "state": "running",
+      "speed": 8,
+      "replay_hour": 176
+    },
+    "headline": {
+      "tone": "warning",
+      "title": "P-101 moved from Healthy to Degraded. 2 linked HAZOP rows were re-scored.",
+      "detail": "Health index 79 → 66. HZ-N1-003 Medium → High, HZ-N1-005 Low → Medium. Rule R-L-01 v1.",
+      "latency_s": 0.05,
+      "link": {
+        "screen": "matrix",
+        "row_code": "HZ-N1-003"
+      }
+    },
+    "health_tiles": [
+      {
+        "tag": "P-101",
+        "name": "Reflux pump",
+        "node": "N1",
+        "health_index": 61,
+        "band": "degraded",
+        "origin": "public_proxy",
+        "source_dataset": "NASA IMS bearing test 2"
+      },
+      {
+        "tag": "P-101B",
+        "name": "Standby reflux pump",
+        "node": "N1",
+        "health_index": 100,
+        "band": "healthy",
+        "origin": "public_proxy",
+        "source_dataset": "NASA IMS bearing test 2"
+      },
+      {
+        "tag": "V-201",
+        "name": "Reflux drum",
+        "node": "N1",
+        "health_index": 100,
+        "band": "healthy",
+        "origin": "public_proxy",
+        "source_dataset": "Tennessee Eastman Process"
+      },
+      {
+        "tag": "FV-201",
+        "name": "Reflux flow control valve",
+        "node": "N1",
+        "health_index": 99,
+        "band": "healthy",
+        "origin": "public_proxy",
+        "source_dataset": "Tennessee Eastman Process"
+      },
+      {
+        "tag": "E-301",
+        "name": "Overhead condenser",
+        "node": "N2",
+        "health_index": 100,
+        "band": "healthy",
+        "origin": "public_proxy",
+        "source_dataset": "Tennessee Eastman Process"
+      },
+      {
+        "tag": "TV-301",
+        "name": "Condenser cooling-water valve",
+        "node": "N2",
+        "health_index": 100,
+        "band": "healthy",
+        "origin": "public_proxy",
+        "source_dataset": "Tennessee Eastman Process"
+      }
+    ],
+    "matrix_summary": {
+      "low": 4,
+      "medium": 3,
+      "high": 1,
+      "extreme": 0,
+      "moved": 2
+    },
+    "rescored_rows": [
+      {
+        "row_code": "HZ-N1-003",
+        "deviation": "No reflux to C-200",
+        "likelihood_old": 2,
+        "likelihood_new": 3,
+        "severity": 4,
+        "score_old": 8,
+        "score_new": 12
+      },
+      {
+        "row_code": "HZ-N1-005",
+        "deviation": "High level in V-201",
+        "likelihood_old": 1,
+        "likelihood_new": 2,
+        "severity": 3,
+        "score_old": 3,
+        "score_new": 6
+      }
+    ],
+    "red_team_summary": null,
+    "loop": [
+      {
+        "stage": "sense",
+        "done": true,
+        "at": "2026-10-18T07:20:43.500Z"
+      },
+      {
+        "stage": "rescore",
+        "done": true,
+        "offset_s": 0.05
+      },
+      {
+        "stage": "red_team",
+        "done": false
+      },
+      {
+        "stage": "approve",
+        "done": false,
+        "pending": 3
+      }
+    ],
+    "activity": [
+      {
+        "audit_id": "AUD-0004",
+        "at": "2026-10-18T07:20:43.550Z",
+        "text": "HZ-N1-005 L1 → L2 (Low → Medium)",
+        "actor": "Risk Engine"
+      },
+      {
+        "audit_id": "AUD-0003",
+        "at": "2026-10-18T07:20:43.550Z",
+        "text": "HZ-N1-003 L2 → L3 (Medium → High)",
+        "actor": "Risk Engine"
+      },
+      {
+        "audit_id": "AUD-0002",
+        "at": "2026-10-18T07:20:43.500Z",
+        "text": "P-101 HealthBandChanged: Healthy → Degraded, HI 66",
+        "actor": "Health Agent"
+      },
+      {
+        "audit_id": "AUD-0001",
+        "at": "2026-10-18T07:20:00.000Z",
+        "text": "Scenario S1 started from reset at 8x",
+        "actor": "Dimas"
+      }
+    ]
+  },
+  "metadata": null,
+  "message": "Success"
+}

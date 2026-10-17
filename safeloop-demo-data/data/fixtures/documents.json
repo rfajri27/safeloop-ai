@@ -1,0 +1,179 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "doc_code": "ARS-PAH201",
+      "title": "Alarm response sheet: PAH-201 high pressure on reflux drum V-201",
+      "type": "alarm_response",
+      "revision": "B",
+      "effective_date": "2024-09-01",
+      "asset_tags": [
+        "V-201",
+        "PT-201",
+        "PSV-201",
+        "E-301",
+        "P-101"
+      ],
+      "is_current": true,
+      "is_synthetic": true
+    },
+    {
+      "doc_code": "DESC-U100",
+      "title": "Unit 100 process description and asset model",
+      "type": "asset_model",
+      "revision": "2",
+      "effective_date": "2025-01-10",
+      "asset_tags": [
+        "C-200",
+        "V-201",
+        "S-101",
+        "P-101",
+        "P-101B",
+        "NRV-101",
+        "FV-201",
+        "FT-201",
+        "E-301",
+        "TV-301",
+        "TIC-301",
+        "TT-301",
+        "PT-201",
+        "LT-201",
+        "PSV-201"
+      ],
+      "is_current": true,
+      "is_synthetic": true
+    },
+    {
+      "doc_code": "HAZOP-U100",
+      "title": "Unit 100 HAZOP worksheet, revalidation 2023",
+      "type": "hazop",
+      "revision": "2023",
+      "effective_date": "2023-11-20",
+      "asset_tags": [
+        "V-201",
+        "P-101",
+        "P-101B",
+        "FV-201",
+        "NRV-101",
+        "C-200",
+        "E-301",
+        "TV-301",
+        "PSV-201"
+      ],
+      "is_current": true,
+      "is_synthetic": true
+    },
+    {
+      "doc_code": "INC-2023-009",
+      "title": "Incident INC-2023-009: P-101B failed to auto-start",
+      "type": "incident",
+      "revision": "1",
+      "effective_date": "2023-08-03",
+      "asset_tags": [
+        "P-101",
+        "P-101B",
+        "FT-201",
+        "V-201",
+        "PSV-201"
+      ],
+      "is_current": true,
+      "is_synthetic": true
+    },
+    {
+      "doc_code": "INC-2024-017",
+      "title": "Incident INC-2024-017: P-101 drive-end bearing failure",
+      "type": "incident",
+      "revision": "1",
+      "effective_date": "2024-05-22",
+      "asset_tags": [
+        "P-101",
+        "P-101B",
+        "FT-201"
+      ],
+      "is_current": true,
+      "is_synthetic": true
+    },
+    {
+      "doc_code": "MAN-P101",
+      "title": "P-101 / P-101B reflux pump operating and maintenance manual",
+      "type": "manual",
+      "revision": "3",
+      "effective_date": "2024-03-01",
+      "asset_tags": [
+        "P-101",
+        "P-101B",
+        "S-101"
+      ],
+      "is_current": true,
+      "is_synthetic": true
+    },
+    {
+      "doc_code": "MR-2025-044",
+      "title": "Maintenance report MR-2025-044: TV-301 stiction",
+      "type": "maintenance_report",
+      "revision": "1",
+      "effective_date": "2025-04-11",
+      "asset_tags": [
+        "TV-301",
+        "TIC-301",
+        "E-301"
+      ],
+      "is_current": true,
+      "is_synthetic": true
+    },
+    {
+      "doc_code": "SHIFT-LOG-06",
+      "title": "Unit 100 shift log, week 6",
+      "type": "shift_log",
+      "revision": "1",
+      "effective_date": "2026-02-09",
+      "asset_tags": [
+        "P-101",
+        "P-101B",
+        "S-101",
+        "E-301",
+        "TV-301"
+      ],
+      "is_current": true,
+      "is_synthetic": true
+    },
+    {
+      "doc_code": "SOP-E301-01",
+      "title": "Response to high condensate temperature or high reflux drum pressure",
+      "type": "sop",
+      "revision": "A",
+      "effective_date": "2024-09-01",
+      "asset_tags": [
+        "E-301",
+        "TV-301",
+        "TIC-301",
+        "V-201",
+        "PT-201"
+      ],
+      "is_current": true,
+      "is_synthetic": true
+    },
+    {
+      "doc_code": "SOP-P101-02",
+      "title": "Switchover to standby reflux pump",
+      "type": "sop",
+      "revision": "C",
+      "effective_date": "2025-07-15",
+      "asset_tags": [
+        "P-101",
+        "P-101B",
+        "S-101",
+        "FT-201",
+        "FV-201"
+      ],
+      "is_current": true,
+      "is_synthetic": true
+    }
+  ],
+  "metadata": {
+    "total": 10,
+    "skip": 0,
+    "limit": 50
+  },
+  "message": "Success"
+}

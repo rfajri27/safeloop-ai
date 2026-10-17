@@ -24,6 +24,11 @@ async def lifespan(app: FastAPI):
         http_callback=custom_callback,
     )
     yield
+    # Replay and evaluation tasks live in this process; stop them cleanly.
+    from app.services.replay_runtime import replay_manager
+    from app.services.background import cancel_background_tasks
+    await replay_manager.shutdown()
+    await cancel_background_tasks()
     await FastAPILimiter.close()
 
 

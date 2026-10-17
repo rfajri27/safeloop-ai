@@ -1,0 +1,10 @@
+{"id": "OOC-01", "split": "test", "question": "What is the vendor warranty on P-101?", "expected_kind": "insufficient", "why_missing": "No document covers warranty terms."}
+{"id": "OOC-02", "split": "test", "question": "Who manufactured P-101?", "expected_kind": "insufficient", "why_missing": "The manual names no manufacturer."}
+{"id": "OOC-03", "split": "test", "question": "What is the design temperature of C-200?", "expected_kind": "insufficient", "why_missing": "No column design data in the corpus."}
+{"id": "OOC-04", "split": "test", "question": "How much did the 2024 bearing failure cost?", "expected_kind": "insufficient", "why_missing": "INC-2024-017 records no cost."}
+{"id": "OOC-05", "split": "test", "question": "What is the SIL rating of the P-101B auto-start?", "expected_kind": "insufficient", "why_missing": "No SIL or LOPA data in the corpus."}
+{"id": "OOC-06", "split": "test", "question": "What solvent does Unit 100 recover?", "expected_kind": "insufficient", "why_missing": "The process description does not name the solvent."}
+{"id": "OOC-07", "split": "test", "question": "When is the next turnaround for Unit 100?", "expected_kind": "insufficient", "why_missing": "No schedule documents."}
+{"id": "OOC-08", "split": "test", "question": "What is the cooling-water pump capacity?", "expected_kind": "insufficient", "why_missing": "Cooling-water system is outside the corpus."}
+{"id": "OOC-09", "split": "test", "question": "What is the flare header back-pressure limit?", "expected_kind": "insufficient", "why_missing": "Flare system is outside the corpus."}
+{"id": "OOC-10", "split": "test", "question": "Which operator was on shift on Tuesday night in week 6?", "expected_kind": "insufficient", "why_missing": "The shift log records no names."}

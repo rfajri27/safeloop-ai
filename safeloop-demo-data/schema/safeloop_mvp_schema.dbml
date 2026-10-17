@@ -1,0 +1,668 @@
+// SafeLoop AI · MVP / PoC data model (PostgreSQL)
+// Paste into https://dbdiagram.io
+// Scope: Unit 100, Nodes 1–2, scenarios S1 (P-101 bearing) and S2 (TV-301 / E-301 cooling).
+// Vectors live in Qdrant; Postgres keeps document and chunk metadata keyed by qdrant_point_id.
+// Advisory only: no table stores or issues control-system commands.
+
+Project safeloop_mvp {
+  database_type: 'PostgreSQL'
+  Note: '''
+  SafeLoop AI MVP schema.
+  Groups: Plant model · HAZOP & risk · Telemetry & health · Knowledge base · AI & governance · Evaluation.
+  Conventions: UUID primary keys, timestamptz in UTC, append-only tables have no updated_at.
+  '''
+}
+
+//////////////////////////////////////////////////////////////
+// ENUMS
+//////////////////////////////////////////////////////////////
+
+Enum user_role {
+  process_safety_engineer
+  reliability_engineer
+  operator
+  trainee
+  plant_manager
+  auditor
+  admin
+}
+
+Enum data_origin {
+  synthetic
+  public_proxy
+  real
+}
+
+Enum health_band {
+  healthy   [note: 'HI >= 80']
+  degraded  [note: '50 <= HI < 80']
+  critical  [note: 'HI < 50']
+}
+
+Enum guide_word {
+  no
+  less
+  more
+  reverse
+  as_well_as
+  part_of
+  other_than
+  high
+  low
+}
+
+Enum hazop_param {
+  flow
+  pressure
+  temperature
+  level
+  composition
+  other
+}
+
+Enum safeguard_type {
+  bpcs
+  alarm
+  ipl
+  procedure
+  sis
+  mechanical [note: 'e.g. a check valve; listed as a safeguard but not credited as an IPL']
+}
+
+Enum record_status {
+  draft
+  under_review
+  approved
+  superseded
+  rejected
+}
+
+Enum doc_type {
+  manual
+  sop
+  alarm_response
+  incident
+  maintenance_report
+  hazop
+  asset_model
+  shift_log
+  rca_report
+}
+
+Enum agent_name {
+  health_agent
+  risk_engine
+  red_team
+  judge
+  knowledge_agent
+  guardrail
+  reporter
+}
+
+Enum verdict {
+  pass
+  block
+  revise
+}
+
+Enum artifact_type {
+  hazop_change
+  risk_rescore
+  maintenance_recommendation
+  moc_draft
+  rca_report
+}
+
+Enum approval_decision {
+  pending
+  approved
+  rejected
+}
+
+Enum citation_target {
+  chunk
+  asset
+  tag_window
+  hazop_row
+}
+
+//////////////////////////////////////////////////////////////
+// PLANT MODEL
+//////////////////////////////////////////////////////////////
+
+Table sites {
+  id uuid [pk, default: `gen_random_uuid()`]
+  code varchar(32) [unique, not null, note: 'e.g. DEMO-SITE']
+  name varchar(200) [not null]
+  origin data_origin [not null, default: 'synthetic']
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table units {
+  id uuid [pk, default: `gen_random_uuid()`]
+  site_id uuid [not null, ref: > sites.id]
+  code varchar(32) [not null, note: 'e.g. U100']
+  name varchar(200) [not null]
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (site_id, code) [unique]
+  }
+}
+
+Table process_nodes {
+  id uuid [pk, default: `gen_random_uuid()`]
+  unit_id uuid [not null, ref: > units.id]
+  code varchar(16) [not null, note: 'N1, N2, N3']
+  name varchar(200) [not null]
+  design_intent text [not null]
+
+  indexes {
+    (unit_id, code) [unique]
+  }
+}
+
+Table assets {
+  id uuid [pk, default: `gen_random_uuid()`]
+  unit_id uuid [not null, ref: > units.id]
+  node_id uuid [ref: > process_nodes.id]
+  tag varchar(32) [not null, note: 'P-101, TV-301, PSV-201']
+  name varchar(200) [not null]
+  asset_class varchar(64) [not null, note: 'centrifugal_pump, control_valve, psv, heat_exchanger']
+  criticality char(1) [note: 'A / B / C']
+  standby_of_id uuid [ref: > assets.id, note: 'P-101B is standby of P-101']
+  is_monitored boolean [not null, default: false]
+  origin data_origin [not null, default: 'synthetic']
+
+  indexes {
+    (unit_id, tag) [unique]
+  }
+}
+
+Table asset_links {
+  code varchar(16) [unique, not null, note: 'L-104; cited as asset_model:L-104 by agents and the Judge']
+  from_asset_id uuid [not null, ref: > assets.id]
+  to_asset_id uuid [not null, ref: > assets.id]
+  relation varchar(32) [not null, note: 'suction_from, protects, controls, feeds, measures, standby_for']
+
+  indexes {
+    (from_asset_id, to_asset_id, relation) [pk]
+  }
+  Note: 'Edges of the asset graph, e.g. P-101 suction_from S-101; PSV-201 protects V-201.'
+}
+
+Table sensor_tags {
+  id uuid [pk, default: `gen_random_uuid()`]
+  asset_id uuid [not null, ref: > assets.id]
+  tag varchar(64) [unique, not null, note: 'P101_DE_VIB_RMS']
+  description varchar(200)
+  eng_unit varchar(16) [not null, note: 'mm/s, °C, barg']
+  alert_low numeric
+  alert_high numeric
+  alert_high_tightened numeric [note: 'Set by rule R-P-01 for safety-critical assets']
+  source_dataset varchar(64) [note: 'NASA IMS, TEP, synthetic']
+  source_signal varchar(128) [note: 'Column or channel in the source dataset']
+  transform text [note: 'Feature extraction / rescaling applied']
+  origin data_origin [not null, default: 'public_proxy']
+}
+
+//////////////////////////////////////////////////////////////
+// TELEMETRY & HEALTH
+//////////////////////////////////////////////////////////////
+
+Table replay_runs {
+  id uuid [pk, default: `gen_random_uuid()`]
+  scenario_code varchar(8) [not null, note: 'S1, S2']
+  speed smallint [not null, default: 3, note: '1x, 3x, 8x']
+  started_by uuid [ref: > users.id]
+  started_at timestamptz [not null, default: `now()`]
+  ended_at timestamptz
+  final_hour smallint
+}
+
+Table sensor_readings {
+  replay_run_id uuid [not null, ref: > replay_runs.id]
+  tag_id uuid [not null, ref: > sensor_tags.id]
+  replay_hour smallint [not null]
+  ts timestamptz [not null, default: `now()`]
+  value numeric [not null]
+  quality varchar(12) [not null, default: 'good', note: 'good / bad / uncertain']
+
+  indexes {
+    (replay_run_id, tag_id, replay_hour) [pk]
+  }
+  Note: 'Append-only. Consider TimescaleDB hypertable or monthly partitions after the MVP.'
+}
+
+Table health_assessments {
+  id uuid [pk, default: `gen_random_uuid()`]
+  replay_run_id uuid [not null, ref: > replay_runs.id]
+  asset_id uuid [not null, ref: > assets.id]
+  replay_hour smallint [not null]
+  health_index smallint [not null, note: '0–100, rounded']
+  band health_band [not null]
+  previous_band health_band [note: 'Set when this row is a band change']
+  model_version varchar(32) [not null, note: 'e.g. pca-hi-v1']
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (replay_run_id, asset_id, replay_hour) [unique]
+    (asset_id, created_at)
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// HAZOP & RISK
+//////////////////////////////////////////////////////////////
+
+Table hazop_rows {
+  id uuid [pk, default: `gen_random_uuid()`]
+  node_id uuid [not null, ref: > process_nodes.id]
+  row_code varchar(24) [not null, note: 'HZ-N1-003']
+  version int [not null, default: 1]
+  guide_word guide_word [not null]
+  parameter hazop_param [not null]
+  deviation text [not null]
+  cause text [not null]
+  cause_asset_id uuid [ref: > assets.id, note: 'Asset whose health drives likelihood']
+  consequence text [not null]
+  severity smallint [not null, note: '1–5']
+  likelihood_base smallint [not null, note: '1–5, design basis']
+  status record_status [not null, default: 'approved']
+  supersedes_id uuid [ref: > hazop_rows.id]
+  created_by_agent agent_name [note: 'Null when written by a person']
+  created_by_user uuid [ref: > users.id]
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (node_id, row_code, version) [unique]
+    status
+  }
+  Note: 'Approved rows are immutable; a change creates a new version that supersedes the old one.'
+}
+
+Table hazop_recommendations {
+  id uuid [pk, default: `gen_random_uuid()`]
+  hazop_row_id uuid [not null, ref: > hazop_rows.id]
+  text text [not null]
+  owner_role user_role
+}
+
+Table safeguards {
+  id uuid [pk, default: `gen_random_uuid()`]
+  unit_id uuid [not null, ref: > units.id]
+  ref_code varchar(64) [not null, note: 'PSV-201, FAL-201, P-101B auto-start']
+  type safeguard_type [not null]
+  description text
+  last_test_date date
+
+  indexes {
+    (unit_id, ref_code) [unique]
+  }
+}
+
+Table hazop_row_safeguards {
+  hazop_row_id uuid [not null, ref: > hazop_rows.id]
+  safeguard_id uuid [not null, ref: > safeguards.id]
+  credited boolean [not null, default: true]
+
+  indexes {
+    (hazop_row_id, safeguard_id) [pk]
+  }
+}
+
+Table safeguard_dependencies {
+  safeguard_id uuid [not null, ref: > safeguards.id]
+  asset_id uuid [not null, ref: > assets.id]
+
+  indexes {
+    (safeguard_id, asset_id) [pk]
+  }
+  Note: 'P-101B auto-start depends on P-101B and FT-201; TIC-301 loop depends on TV-301. Drives rule R-S-02.'
+}
+
+Table risk_rule_sets {
+  id uuid [pk, default: `gen_random_uuid()`]
+  version varchar(16) [unique, not null, note: 'v1.0']
+  rules jsonb [not null, note: '{"R-L-01":{"band":"degraded","dL":1}, "R-S-02":{...}}']
+  status record_status [not null, default: 'draft']
+  approved_by uuid [ref: > users.id, note: 'Process safety engineer']
+  approved_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table risk_rescores {
+  id uuid [pk, default: `gen_random_uuid()`]
+  hazop_row_id uuid [not null, ref: > hazop_rows.id]
+  rule_set_id uuid [not null, ref: > risk_rule_sets.id]
+  replay_run_id uuid [ref: > replay_runs.id]
+  trigger_health_id uuid [ref: > health_assessments.id, note: 'Band change that caused this re-score']
+  likelihood_old smallint [not null]
+  likelihood_new smallint [not null]
+  severity smallint [not null]
+  score_old smallint [not null]
+  score_new smallint [not null]
+  rules_applied text[] [not null, note: "{'R-L-01','R-S-02'}"]
+  safeguards_lost uuid[] [note: 'Safeguard ids whose credit was removed']
+  computed_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (hazop_row_id, computed_at)
+  }
+  Note: 'Deterministic output of the Risk Engine. No LLM involved. Append-only.'
+}
+
+//////////////////////////////////////////////////////////////
+// KNOWLEDGE BASE (metadata; vectors in Qdrant)
+//////////////////////////////////////////////////////////////
+
+Table documents {
+  id uuid [pk, default: `gen_random_uuid()`]
+  doc_code varchar(32) [not null, note: 'MAN-P101, SOP-P101-02, INC-2024-017; unique per revision']
+  title varchar(300) [not null]
+  type doc_type [not null]
+  revision varchar(16) [not null, default: 'A']
+  effective_date date
+  is_current boolean [not null, default: true, note: 'Superseded revisions excluded from retrieval']
+  origin data_origin [not null, default: 'synthetic']
+  generator_model varchar(64) [note: 'Set for LLM-generated synthetic documents']
+  reviewed_by uuid [ref: > users.id]
+  storage_uri text [note: 'Object-store path of the source file']
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (doc_code, revision) [unique]
+  }
+}
+
+Table document_assets {
+  document_id uuid [not null, ref: > documents.id]
+  asset_id uuid [not null, ref: > assets.id]
+
+  indexes {
+    (document_id, asset_id) [pk]
+  }
+}
+
+Table document_chunks {
+  id uuid [pk, default: `gen_random_uuid()`]
+  document_id uuid [not null, ref: > documents.id]
+  chunk_index int [not null]
+  text text [not null]
+  page int
+  section varchar(200)
+  token_count int
+  qdrant_point_id uuid [unique, not null]
+  embedding_model varchar(64) [not null]
+
+  indexes {
+    (document_id, chunk_index) [unique]
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// AI & GOVERNANCE
+//////////////////////////////////////////////////////////////
+
+Table users {
+  id uuid [pk, default: `gen_random_uuid()`]
+  handle varchar(32) [unique, not null, note: 'Demo login handle: rina, dimas, agus, auditor, admin']
+  display_name varchar(120) [not null]
+  email varchar(200) [unique]
+  role user_role [not null]
+  is_demo boolean [not null, default: true]
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table prompt_templates {
+  id uuid [pk, default: `gen_random_uuid()`]
+  agent agent_name [not null]
+  version varchar(16) [not null, note: 'redteam.v1']
+  template text [not null]
+  output_schema jsonb [note: 'JSON schema the output must validate against']
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (agent, version) [unique]
+  }
+}
+
+Table agent_runs {
+  id uuid [pk, default: `gen_random_uuid()`]
+  agent agent_name [not null]
+  prompt_template_id uuid [ref: > prompt_templates.id]
+  model_id varchar(64) [note: 'Null for rule-based components']
+  model_endpoint varchar(32) [note: 'cloud_api / vllm']
+  input jsonb [not null]
+  output jsonb
+  schema_valid boolean
+  input_tokens int
+  output_tokens int
+  latency_ms int
+  error text
+  hazop_row_id uuid [ref: > hazop_rows.id, note: 'Row the Red Team was run on']
+  chat_message_id uuid [ref: > chat_messages.id]
+  started_at timestamptz [not null, default: `now()`]
+}
+
+Table hazop_proposals {
+  id uuid [pk, default: `gen_random_uuid()`]
+  agent_run_id uuid [not null, ref: > agent_runs.id]
+  target_row_id uuid [not null, ref: > hazop_rows.id]
+  guide_word guide_word [not null]
+  parameter hazop_param [not null]
+  deviation text [not null]
+  cause text [not null]
+  consequence text
+  proposed_safeguards text[] [note: 'As returned by the model, before grounding']
+  recommendation text
+  resulting_row_id uuid [ref: > hazop_rows.id, note: 'New row version created on approval']
+}
+
+Table judge_verdicts {
+  id uuid [pk, default: `gen_random_uuid()`]
+  proposal_id uuid [ref: > hazop_proposals.id]
+  chat_message_id uuid [ref: > chat_messages.id]
+  verdict verdict [not null]
+  unknown_entities text[]
+  unresolved_citations text[]
+  actuation_wording boolean [not null, default: false]
+  reason text
+  checked_at timestamptz [not null, default: `now()`]
+
+  Note: 'Rule-based checks in code. Exactly one of proposal_id / chat_message_id is set (CHECK constraint).'
+}
+
+Table approval_items {
+  id uuid [pk, default: `gen_random_uuid()`]
+  artifact_type artifact_type [not null]
+  title varchar(300) [not null]
+  asset_id uuid [ref: > assets.id]
+  proposal_id uuid [ref: > hazop_proposals.id]
+  rescore_id uuid [ref: > risk_rescores.id]
+  body jsonb [note: 'Draft content for reports and recommendations']
+  confidence varchar(8) [not null, note: 'high / medium / low']
+  judge_verdict_id uuid [ref: > judge_verdicts.id]
+  decision approval_decision [not null, default: 'pending']
+  decided_by uuid [ref: > users.id]
+  decision_reason text [note: 'Required when decision = rejected (CHECK)']
+  edited_body jsonb [note: 'Reviewer edits, kept as a diff source']
+  created_at timestamptz [not null, default: `now()`]
+  decided_at timestamptz
+
+  indexes {
+    decision
+    (artifact_type, created_at)
+  }
+}
+
+Table chat_sessions {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [not null, ref: > users.id]
+  started_at timestamptz [not null, default: `now()`]
+}
+
+Table chat_messages {
+  id uuid [pk, default: `gen_random_uuid()`]
+  session_id uuid [not null, ref: > chat_sessions.id]
+  role varchar(10) [not null, note: 'user / assistant']
+  content text [not null]
+  kind varchar(16) [note: 'answer / insufficient / refused']
+  confidence varchar(8)
+  guardrail_reason varchar(64) [note: 'Set when refused before any model call']
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (session_id, created_at)
+  }
+}
+
+Table citations {
+  id uuid [pk, default: `gen_random_uuid()`]
+  target_type citation_target [not null]
+  chunk_id uuid [ref: > document_chunks.id]
+  asset_id uuid [ref: > assets.id]
+  tag_id uuid [ref: > sensor_tags.id]
+  hour_from smallint
+  hour_to smallint
+  hazop_row_id uuid [ref: > hazop_rows.id]
+  resolved boolean [not null, default: true, note: 'False = cited id did not resolve']
+  raw_ref varchar(128) [note: 'Reference exactly as returned by the model']
+  chat_message_id uuid [ref: > chat_messages.id]
+  proposal_id uuid [ref: > hazop_proposals.id]
+  approval_item_id uuid [ref: > approval_items.id]
+  rescore_id uuid [ref: > risk_rescores.id]
+
+  Note: 'Polymorphic evidence link. One owner (message / proposal / approval / rescore) and one target per row.'
+}
+
+Table audit_log {
+  id bigserial [pk]
+  occurred_at timestamptz [not null, default: `now()`]
+  action varchar(48) [not null, note: 'health_band_changed, risk_rescore, draft_created, judge_block, approved, rejected, guardrail_refusal']
+  actor_agent agent_name
+  actor_user uuid [ref: > users.id]
+  entity_table varchar(48) [not null]
+  entity_id uuid [not null]
+  model_id varchar(64)
+  prompt_version varchar(16)
+  rule_set_version varchar(16)
+  replay_run_id uuid [ref: > replay_runs.id]
+  replay_hour smallint
+  detail jsonb
+
+  indexes {
+    (entity_table, entity_id)
+    occurred_at
+  }
+  Note: 'Append-only. Revoke UPDATE/DELETE from the app role; insert via trigger or service only.'
+}
+
+//////////////////////////////////////////////////////////////
+// EVALUATION
+//////////////////////////////////////////////////////////////
+
+Table golden_items {
+  id uuid [pk, default: `gen_random_uuid()`]
+  item_code varchar(16) [unique, not null, note: 'GH-01, QA-01, OOC-01, GR-01, RCA-01']
+  set_name varchar(32) [not null, note: 'hazop_rows, qa, out_of_corpus, guardrail, rca']
+  split varchar(8) [not null, default: 'test', note: 'train / test; test never used in prompts']
+  input jsonb [not null]
+  expected jsonb [not null]
+  authored_by uuid [ref: > users.id]
+  reviewed_by uuid [ref: > users.id]
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table eval_runs {
+  id uuid [pk, default: `gen_random_uuid()`]
+  started_at timestamptz [not null, default: `now()`]
+  finished_at timestamptz
+  git_sha varchar(40)
+  model_id varchar(64)
+  rule_set_id uuid [ref: > risk_rule_sets.id]
+  dataset_hash varchar(64)
+  is_frozen boolean [not null, default: false, note: 'True for the demo-day run']
+}
+
+Table eval_results {
+  id uuid [pk, default: `gen_random_uuid()`]
+  eval_run_id uuid [not null, ref: > eval_runs.id]
+  objective_code varchar(8) [not null, note: 'PO-1 … PO-5']
+  metric varchar(64) [not null]
+  value numeric
+  target numeric
+  passed boolean
+  sample_size int
+
+  indexes {
+    (eval_run_id, objective_code, metric) [unique]
+  }
+}
+
+Table eval_item_results {
+  eval_run_id uuid [not null, ref: > eval_runs.id]
+  golden_item_id uuid [not null, ref: > golden_items.id]
+  passed boolean [not null]
+  output jsonb
+  agent_run_id uuid [ref: > agent_runs.id]
+
+  indexes {
+    (eval_run_id, golden_item_id) [pk]
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// TABLE GROUPS (colour blocks in dbdiagram)
+//////////////////////////////////////////////////////////////
+
+TableGroup plant_model [color: #0071E3] {
+  sites
+  units
+  process_nodes
+  assets
+  asset_links
+  sensor_tags
+}
+
+TableGroup telemetry_health [color: #1E9E45] {
+  replay_runs
+  sensor_readings
+  health_assessments
+}
+
+TableGroup hazop_risk [color: #D97000] {
+  hazop_rows
+  hazop_recommendations
+  safeguards
+  hazop_row_safeguards
+  safeguard_dependencies
+  risk_rule_sets
+  risk_rescores
+}
+
+TableGroup knowledge_base [color: #6B4FBB] {
+  documents
+  document_assets
+  document_chunks
+}
+
+TableGroup ai_governance [color: #D70015] {
+  users
+  prompt_templates
+  agent_runs
+  hazop_proposals
+  judge_verdicts
+  approval_items
+  chat_sessions
+  chat_messages
+  citations
+  audit_log
+}
+
+TableGroup evaluation [color: #6E6E73] {
+  golden_items
+  eval_runs
+  eval_results
+  eval_item_results
+}
