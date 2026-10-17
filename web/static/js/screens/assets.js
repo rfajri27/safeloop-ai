@@ -160,7 +160,6 @@ function trendCard(s) {
   return html`<section class="card">
     <div class="card-head">
       <h2 class="card-title">Sensor trend</h2>
-      ${meta ? html`<span style="display: flex; gap: 6px; flex-wrap: wrap"><span class="tag">${meta.origin === 'public_proxy' ? 'Proxy' : meta.origin} · ${meta.source_dataset || ''}</span><span class="tag">1 feature / replay hour</span></span>` : ''}
     </div>
     ${sensors.length ? html`<div class="sensor-tabs" role="group" aria-label="Sensor tag">${sensors.map((st) => html`<button type="button" class="sensor-tab" data-sensor="${st.tag}" aria-pressed="${st.tag === s.sensor}">${st.tag}</button>`)}</div>` : ''}
     ${body}

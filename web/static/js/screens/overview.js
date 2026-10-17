@@ -68,20 +68,6 @@ function headline(h) {
   </section>`;
 }
 
-const DATASET_SHORT = [[/tennessee eastman/i, 'TEP'], [/nasa ims/i, 'NASA IMS']];
-function provenance(tile) {
-  if (!tile) return '';
-  if (tile.origin === 'synthetic') return '';
-  const ds = tile.source_dataset || '';
-  return DATASET_SHORT.find(([re]) => re.test(ds))?.[1] || ds;
-}
-
-function nodeProvenance(tiles) {
-  const sources = [...new Set(tiles.map(provenance).filter(Boolean))];
-  const proxy = tiles.some((t) => t.origin === 'public_proxy');
-  return `${proxy ? 'Proxy · ' : ''}${sources.join(' + ')}`;
-}
-
 function healthCard(tiles = [], nodeNames) {
   const byNode = {};
   tiles.forEach((t) => { (byNode[t.node || '—'] ||= []).push(t); });
@@ -91,7 +77,6 @@ function healthCard(tiles = [], nodeNames) {
       <div class="node-head">
         <span class="node-code">NODE ${code.replace(/^N/, '')}</span>
         <span class="node-name">${nodeNames[code] || ''}</span>
-        <span style="margin-left: auto"><span class="tag">${nodeProvenance(list)}</span></span>
       </div>
       <div class="tiles">${list.map((t) => html`<a class="tile ${t.band || ''}" href="#/assets/${t.tag}">
         <div class="tile-line"><span class="tile-tag">${t.tag}</span><span class="tile-hi">${num(t.health_index)}</span></div>

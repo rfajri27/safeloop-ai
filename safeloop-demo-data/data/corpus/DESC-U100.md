@@ -11,8 +11,6 @@ origin: synthetic
 author: SafeLoop demo team
 ---
 
-> SYNTHETIC DOCUMENT. A fictional unit written for the SafeLoop demonstration. Sensor trends in the demo are shaped on public research data (NASA IMS bearings, Tennessee Eastman Process) and relabelled to these tags.
-
 # Unit 100: Solvent Recovery
 
 ## Overview

@@ -11,8 +11,6 @@ origin: synthetic
 author: SafeLoop demo team
 ---
 
-> SYNTHETIC DOCUMENT. Written for the SafeLoop demonstration.
-
 # Alarm response sheet: PAH-201
 
 ## Alarm

@@ -2,7 +2,7 @@
 
 import { api, postStream } from '../api.js';
 import {
-  html, raw, escape, render, markdown, icon, titleCase, loading, on, toastError, ROLE_LABEL, duration,
+  html, raw, escape, render, markdown, mdInline, icon, titleCase, loading, on, toastError, ROLE_LABEL, duration,
 } from '../ui.js';
 
 export const title = 'Knowledge assistant';
@@ -12,7 +12,7 @@ const CHAT_ROLES_DENY = ['auditor'];
 const SUGGESTIONS = [
   'What is the procedure to switch P-101 to the standby pump?',
   'What does the PAH-201 alarm mean?',
-  'Which rows does P-101 feed?',
+  'Which HAZOP rows does P-101 feed?',
 ];
 const STEP_LABEL = {
   guard_input: 'Checking the guardrail',
@@ -216,8 +216,12 @@ function userMsg(m) {
   </div>`;
 }
 
+const citeButton = (n) => `<button type="button" class="cite-ref" data-cite="${n}" aria-label="Source ${n}">${n}</button>`;
+const CITE = (html) => html.replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (_, group) => group.split(',').map((n) => citeButton(n.trim())).join(''));
+
+/** Answer text as markdown, with [n] markers turned into source buttons. */
 function citedText(text) {
-  return raw(escape(text).replace(/\[(\d+)\]/g, '<button type="button" class="cite-ref" data-cite="$1" aria-label="Source $1">$1</button>'));
+  return raw(CITE(String(markdown(text))));
 }
 
 function botMsg(m, i) {
@@ -257,8 +261,8 @@ function botMsg(m, i) {
   return html`<div class="msg-bot" data-msg="${i}">${head}<div class="bubble-bot">
     ${m.pending && !m.text ? html`<div class="progress-steps">${m.progress.length ? m.progress[m.progress.length - 1] : 'Starting'}…</div>` : ''}
     ${m.steps?.length
-      ? html`<p class="answer-text">${citedText(m.text.split('\n')[0])}</p><ol>${m.steps.map((s) => html`<li>${s.text} ${(s.citations || []).map((n) => html`<button type="button" class="cite-ref" data-cite="${n}" aria-label="Source ${n}">${n}</button>`)}</li>`)}</ol>`
-      : m.text ? html`<p class="answer-text">${citedText(m.text)}</p>` : ''}
+      ? html`<div class="answer-text">${citedText(m.text.split('\n')[0])}</div><ol>${m.steps.map((s) => html`<li>${raw(mdInline(s.text))} ${(s.citations || []).map((n) => html`<button type="button" class="cite-ref" data-cite="${n}" aria-label="Source ${n}">${n}</button>`)}</li>`)}</ol>`
+      : m.text ? html`<div class="answer-text">${citedText(m.text)}</div>` : ''}
     ${m.pending && m.text ? html`<div class="progress-steps">${m.progress[m.progress.length - 1] || ''}…</div>` : ''}
     ${!m.pending && (m.citations.length || m.advisory_note) ? html`<div class="muted" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px">
       ${m.citations.length ? html`<span class="pill sm accent">${m.citations.length} source${m.citations.length === 1 ? '' : 's'}</span>` : ''}
@@ -280,7 +284,6 @@ function sourcePanel() {
         <span class="badge-icon" style="width: 28px; height: 28px; border-radius: 9px; background: var(--accent-soft)">${icon('doc', { size: 14, stroke: '#3448F0' })}</span>
         <span class="cite-body"><span class="mono" style="font-size: 13px">${d.doc_code}</span><span class="muted" style="font-size: 12px">${d.title}</span></span>
       </button>`)}</div>` : html`<div class="empty"><strong>No documents indexed</strong><span>Run the ingest job to load the corpus.</span></div>`}
-      <p class="muted" style="font-size: 13px">Retrieved by keyword + vector search. Document text is treated as data, never as instructions.</p>
     </aside>`;
   }
 
@@ -308,6 +311,5 @@ function sourcePanel() {
       ${src.chunk ? html`<div class="passage"><span style="font-size: 12px; font-weight: 600; color: var(--accent)">Cited passage${src.chunk.section ? ` · ${src.chunk.section}` : ''}${src.chunk.page ? ` · page ${src.chunk.page}` : ''}</span>${markdown(src.chunk.text)}</div>`
         : html`<div class="empty"><strong>Passage not available</strong><span>${src.chunk_id ? 'The document-chunk endpoint is not implemented yet.' : 'This citation has no chunk to show. Open the document to read it.'}</span></div>`}
     `}
-    <p class="muted" style="font-size: 13px">Document text is treated as data, never as instructions.</p>
   </aside>`;
 }

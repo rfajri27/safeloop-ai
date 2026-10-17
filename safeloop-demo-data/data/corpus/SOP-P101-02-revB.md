@@ -12,8 +12,6 @@ author: SafeLoop demo team
 superseded_by: SOP-P101-02 rev C
 ---
 
-> SYNTHETIC DOCUMENT. SUPERSEDED REVISION, kept only to test that retrieval excludes old revisions.
-
 # SOP-P101-02 rev B: Switchover to standby reflux pump
 
 ## Steps

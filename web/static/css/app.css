@@ -458,7 +458,8 @@ svg { flex-shrink: 0; }
 .bubble-bot.refused { flex-direction: row; background: var(--surface-2); gap: 14px; }
 .bubble-bot.insufficient { flex-direction: row; border: 1.5px dashed #9AA3B2; gap: 14px; }
 .bubble-bot ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
-.answer-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.answer-text { overflow-wrap: anywhere; }
+.answer-text .md { gap: 8px; }
 .cite-ref {
   display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px;
   border-radius: 6px; background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 600;

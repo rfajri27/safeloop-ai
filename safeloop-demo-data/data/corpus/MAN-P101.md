@@ -11,8 +11,6 @@ origin: synthetic
 author: SafeLoop demo team
 ---
 
-> SYNTHETIC DOCUMENT. Written for the SafeLoop demonstration. Not a real vendor manual.
-
 # P-101 / P-101B reflux pump manual
 
 ## 1. Description

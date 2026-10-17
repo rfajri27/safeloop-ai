@@ -24,7 +24,7 @@ export function render(el, view) { el.innerHTML = part(view); }
 
 // ---------- Markdown (document passages) ----------
 
-const mdInline = (s) => escape(s)
+export const mdInline = (s) => escape(s)
   .replace(/`([^`]+)`/g, '<code>$1</code>')
   .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
   .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>');

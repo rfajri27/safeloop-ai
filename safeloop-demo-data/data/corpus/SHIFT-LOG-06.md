@@ -11,8 +11,6 @@ origin: synthetic
 author: SafeLoop demo team
 ---
 
-> SYNTHETIC DOCUMENT. Fictional shift log entries written for the SafeLoop demonstration.
-
 # Unit 100 shift log, week 6
 
 ## Monday day shift
