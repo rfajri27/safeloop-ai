@@ -4,7 +4,7 @@ Usage (from the repo root, after `alembic upgrade head`):
     python -m scripts.seed_demo_data [path/to/seed.sql]
 
 The seed is idempotent (ON CONFLICT DO NOTHING, deterministic UUIDs), so it is
-safe to re-run. Default path: local/safeloop-demo-data/data/sql/seed.sql
+safe to re-run. Default path: safeloop-demo-data/data/sql/seed.sql
 """
 import asyncio
 import sys
@@ -14,7 +14,7 @@ import asyncpg
 
 from config.settings import env
 
-DEFAULT_SEED = Path(__file__).resolve().parent.parent / "local/safeloop-demo-data/data/sql/seed.sql"
+DEFAULT_SEED = Path(__file__).resolve().parent.parent / "safeloop-demo-data/data/sql/seed.sql"
 COUNT_TABLES = (
     "sites", "units", "process_nodes", "assets", "asset_links", "sensor_tags",
     "safeguards", "safeguard_dependencies", "hazop_rows", "hazop_row_safeguards",

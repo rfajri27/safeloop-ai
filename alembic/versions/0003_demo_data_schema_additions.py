@@ -4,7 +4,7 @@ Revision ID: 0003
 Revises: 0002
 Create Date: 2026-10-11 23:30:00.000000
 
-The demo data package (local/safeloop-demo-data) needs four small additions
+The demo data package (safeloop-demo-data) needs four small additions
 to the MVP schema; see its README, "Schema additions":
 
 - asset_links.code (unique): agents and the Judge cite links as asset_model:L-104

@@ -60,7 +60,7 @@ class Settings(BaseSettings):
     replay_seconds_per_hour: float = 2.0
 
     # Demo data package: seed JSON, replay files, corpus, golden sets
-    demo_data_dir: str = "local/safeloop-demo-data/data"
+    demo_data_dir: str = "safeloop-demo-data/data"
 
     @property
     def demo_data_path(self) -> Path:

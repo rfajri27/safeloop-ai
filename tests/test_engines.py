@@ -16,7 +16,7 @@ from app.engines.replay_engine import load_scenario
 from app.engines.risk_engine import RowInput, RuleSet, SafeguardInput, rescore, score_rows
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = ROOT / "local" / "safeloop-demo-data" / "data"
+DATA = ROOT / "safeloop-demo-data" / "data"
 ENGINES = ROOT / "app" / "engines"
 FORBIDDEN = ("langchain", "langgraph", "google", "openai", "httpx", "requests", "aiohttp", "urllib", "socket")
 
