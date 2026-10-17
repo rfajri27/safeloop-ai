@@ -116,7 +116,6 @@ svg { flex-shrink: 0; }
 .advisory { padding: 14px; border-radius: 18px; background: var(--surface-2); display: flex; flex-direction: column; gap: 6px; }
 .advisory-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
 .advisory p { font-size: 13px; line-height: 1.45; color: var(--ink-2); }
-.status-line { display: flex; align-items: center; gap: 8px; padding: 0 8px; font-size: 13px; color: var(--ink-2); }
 .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--muted); flex-shrink: 0; display: inline-block; }
 .dot.ok { background: var(--ok); }
 .dot.warn { background: var(--warn); }
@@ -142,10 +141,6 @@ svg { flex-shrink: 0; }
 .page-title { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .page-title h1 { font-family: var(--font-display); font-size: 30px; font-weight: 600; letter-spacing: -0.025em; }
 .page-title p { font-size: 15px; color: var(--muted); }
-.page-footer {
-  margin-top: auto; padding: 4px 8px 0; display: flex; justify-content: space-between; gap: 12px;
-  flex-wrap: wrap; font-size: 13px; color: var(--muted);
-}
 
 /* Replay strip */
 .replay {

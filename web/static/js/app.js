@@ -14,7 +14,6 @@ import * as evaluation from './screens/eval.js';
 const UNIT = 'U100';
 const REFRESH_MS = 10000;      // fallback poll; live events refresh sooner
 const LIVE_THROTTLE_MS = 2000; // at most one event-driven refresh per window (replay ticks every 0.25-2 s)
-const HEALTH_MS = 30000;
 const REPLAY_ROLES = ['reliability_engineer', 'process_safety_engineer', 'admin'];
 
 const ROUTES = {
@@ -39,7 +38,6 @@ const PERSONAS = [
 /** Shared state every screen can read. `shell.overview` is refreshed in the background. */
 export const shell = {
   overview: null,
-  health: null,
   get user() { return auth.user; },
   can(roles) { return roles.includes(auth.user?.role); },
   navigate(path) { location.hash = `#/${path}`; },
@@ -49,7 +47,6 @@ export const shell = {
 const $ = (id) => document.getElementById(id);
 let cleanup = null;
 let timer = null;
-let healthTimer = null;
 
 // ---------- Login ----------
 
@@ -60,7 +57,7 @@ function showLogin() {
   render(root, html`<div class="login-wrap"><div class="login">
     <div class="brand">
       <svg width="40" height="40" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="11" fill="#3448F0"></rect><circle cx="17" cy="17" r="8" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="38 12.3" transform="rotate(-50 17 17)"></circle><circle cx="23.1" cy="11.9" r="2.4" fill="#FFFFFF"></circle></svg>
-      <span style="display: flex; flex-direction: column"><span class="brand-name" style="font-size: 22px">SafeLoop <span>AI</span></span><span class="brand-sub">MVP · Unit 100 · sign in</span></span>
+      <span style="display: flex; flex-direction: column"><span class="brand-name" style="font-size: 22px">SafeLoop <span>AI</span></span><span class="brand-sub">Unit 100 · sign in</span></span>
     </div>
     <div style="display: flex; flex-direction: column; gap: 6px">
       <h1 class="display" style="font-size: 24px; font-weight: 600">Choose a user</h1>
@@ -132,20 +129,6 @@ $('user-chip').addEventListener('click', () => {
     showLogin();
   }
 });
-
-function renderHealth() {
-  const el = $('llm-status');
-  const h = shell.health;
-  if (!h) {
-    el.innerHTML = '<span class="dot crit"></span>API unreachable';
-  } else if (h.db !== 'ok' || h.redis !== 'ok') {
-    el.innerHTML = '<span class="dot warn"></span>Some services down';
-    el.title = `db ${h.db} · redis ${h.redis} · qdrant ${h.qdrant}`;
-  } else {
-    el.innerHTML = h.llm_enabled ? '<span class="dot ok"></span>LLM gateway online' : '<span class="dot"></span>LLM gateway off';
-    el.title = `db ${h.db} · redis ${h.redis} · qdrant ${h.qdrant}`;
-  }
-}
 
 // ---------- Replay strip ----------
 
@@ -229,15 +212,6 @@ async function loadShell() {
   window.dispatchEvent(new CustomEvent('shell:update'));
 }
 
-async function refreshHealth() {
-  try {
-    shell.health = (await api.raw('GET', '/health', { anonymous: true })).data;
-  } catch (err) {
-    shell.health = err.data ?? null;
-  }
-  renderHealth();
-}
-
 // Replay ticks, band changes, re-scores and approvals arrive on the unit's SSE stream;
 // each one schedules a refresh, throttled so a fast replay does not flood the API.
 let live = null;
@@ -298,18 +272,14 @@ function start() {
   renderUser();
   // Screens that need the overview await shell.refresh(), which joins this request.
   refreshShell();
-  refreshHealth();
   route();
   connectLive();
   clearInterval(timer);
   timer = setInterval(refreshShell, REFRESH_MS);
-  clearInterval(healthTimer);
-  healthTimer = setInterval(refreshHealth, HEALTH_MS);
 }
 
 function stop() {
   clearInterval(timer);
-  clearInterval(healthTimer);
   clearTimeout(liveTimer);
   liveTimer = null;
   live?.close();

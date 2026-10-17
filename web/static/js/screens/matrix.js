@@ -15,16 +15,12 @@ export function subtitle(shell) {
 const SEVERITY = ['Minor', 'Moderate', 'Serious', 'Major', 'Catastrophic'];
 
 export async function mount(el, param, shell) {
-  const state = { rows: [], mode: 'live', selected: param, why: null, whyError: null, ruleSet: null };
+  const state = { rows: [], mode: 'live', selected: param, why: null, whyError: null };
   render(el, loading(620));
 
   try {
-    const [register, ruleSet] = await Promise.all([
-      api.get('/hazop-rows'),
-      api.get('/risk-rule-sets/active').catch(() => null),
-    ]);
+    const register = await api.get('/hazop-rows');
     state.rows = (register.data?.nodes || []).flatMap((n) => n.rows.map((r) => ({ ...r, node: n })));
-    state.ruleSet = ruleSet?.data ?? null;
   } catch (err) {
     render(el, errorState(err, 'the risk matrix'));
     return;
@@ -108,10 +104,7 @@ function view(s) {
   return html`<div class="row collapse-lg">
     <section class="card" style="flex: 1 1 0">
       <div class="card-head">
-        <div style="display: flex; flex-direction: column; gap: 2px">
-          <h2 class="card-title">Likelihood × Severity</h2>
-          <span class="muted" style="font-size: 13px">Scored in code by the Risk Engine${s.ruleSet ? ` · rules ${s.ruleSet.version}` : ''}</span>
-        </div>
+        <h2 class="card-title">Likelihood × Severity</h2>
         <div role="group" aria-label="Matrix view" class="seg">
           <button type="button" data-mode="basis" aria-pressed="${s.mode === 'basis'}">Design basis</button>
           <button type="button" data-mode="live" aria-pressed="${s.mode === 'live'}">Live</button>
