@@ -226,6 +226,5 @@ function citation(c) {
   return html`<a class="cite" href="${href}">
     <span class="cite-n">${c.index}</span>
     <span class="cite-body"><span style="font-size: 14px">${titleText}</span>${sub ? html`<span class="muted" style="font-size: 12px">${sub}</span>` : ''}</span>
-    ${c.is_synthetic ? html`<span class="tag">Synthetic</span>` : ''}
   </a>`;
 }

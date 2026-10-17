@@ -17,11 +17,7 @@ class Settings(BaseSettings):
     app_base_url: str = "http://localhost:8000"
     allowed_origins: str
 
-    # AI Foundary
-    api_key_ai_foundary: str
-    ai_foundary_endpoint: str
-    azure_openai_endpoint: str
-
+    # AI
     google_api_key: str
 
     # Redis

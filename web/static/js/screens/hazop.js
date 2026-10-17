@@ -116,7 +116,7 @@ function view(s, shell) {
           ${n.shown.map((r) => rowView(r, s.selected))}
         `) : html`<div class="empty" style="margin-top: 8px"><strong>No rows match</strong><span>Clear the search or filters to see the full register.</span></div>`}
       </div>
-      <p class="muted" style="font-size: 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap">Loaded from hazop_unit100.json <span class="tag">Synthetic</span> · every safeguard names an asset in the model</p>
+      <p class="muted" style="font-size: 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap">Loaded from hazop_unit100.json · every safeguard names an asset in the model</p>
     </section>
     ${drawer(s, shell)}
   </div>`;

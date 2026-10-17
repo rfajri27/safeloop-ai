@@ -23,7 +23,7 @@ export async function mount(el, tagParam, shell) {
     return;
   }
   if (!state.list.length) {
-    render(el, html`<div class="card"><div class="empty"><strong>No monitored assets</strong><span>Seed the demo data to load the Unit 100 asset model.</span></div></div>`);
+    render(el, html`<div class="card"><div class="empty"><strong>No monitored assets</strong><span>The Unit 100 asset model has not been loaded yet.</span></div></div>`);
     return;
   }
   if (!state.list.some((a) => a.tag === state.tag)) state.tag = state.list[0].tag;
@@ -207,7 +207,7 @@ function feedsCard(s) {
           <div style="display: flex; gap: 6px; flex-wrap: wrap">${(r.safeguards || []).map((sg) => html`<span class="sg">${icon('shield', { size: 12 })}${sg}</span>`)}</div>
         </a>`)
       : html`<div class="empty"><strong>No linked rows</strong><span>This asset is not a cause or safeguard in the register.</span></div>`}
-    <p class="muted" style="font-size: 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap">Links come from the Unit 100 asset model <span class="tag">Synthetic</span></p>
+    <p class="muted" style="font-size: 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap">Links come from the Unit 100 asset model</p>
   </section>`;
 }
 

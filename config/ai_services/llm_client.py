@@ -50,37 +50,6 @@ class LLMClient:
             max_retries=env.llm_max_retries,
         )
 
-    def openai(
-        self,
-        model: str,
-        temperature: Optional[float] = None,
-        max_tokens: int = DEFAULT_MAX_TOKENS,
-        timeout: float = DEFAULT_TIMEOUT,
-        max_retries: int = 2,
-    ) -> ChatOpenAI:
-        """
-        Create an OpenAI chat client.
-
-        Args:
-            model: Model name
-            temperature: Sampling temperature (default None)
-            max_tokens: Maximum output tokens
-            timeout: Request timeout in seconds
-            max_retries: Maximum retry attempts on failure
-
-        Returns:
-            ChatOpenAI: Configured OpenAI client
-        """
-        return ChatOpenAI(
-            base_url=env.azure_openai_endpoint,
-            api_key=env.api_key_ai_foundary,
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            timeout=timeout,
-            max_retries=max_retries
-        )
-
 
 # SINGLETON: LLM client factory (created once at module import)
 llm_client = LLMClient()

@@ -71,7 +71,7 @@ function headline(h) {
 const DATASET_SHORT = [[/tennessee eastman/i, 'TEP'], [/nasa ims/i, 'NASA IMS']];
 function provenance(tile) {
   if (!tile) return '';
-  if (tile.origin === 'synthetic') return 'Synthetic';
+  if (tile.origin === 'synthetic') return '';
   const ds = tile.source_dataset || '';
   return DATASET_SHORT.find(([re]) => re.test(ds))?.[1] || ds;
 }
@@ -79,7 +79,7 @@ function provenance(tile) {
 function nodeProvenance(tiles) {
   const sources = [...new Set(tiles.map(provenance).filter(Boolean))];
   const proxy = tiles.some((t) => t.origin === 'public_proxy');
-  return `${proxy ? 'Proxy · ' : ''}${sources.filter((s) => s !== 'Synthetic' || !proxy).join(' + ')}`;
+  return `${proxy ? 'Proxy · ' : ''}${sources.join(' + ')}`;
 }
 
 function healthCard(tiles = [], nodeNames) {
@@ -97,7 +97,7 @@ function healthCard(tiles = [], nodeNames) {
         <div class="tile-line"><span class="tile-tag">${t.tag}</span><span class="tile-hi">${num(t.health_index)}</span></div>
         <div class="tile-line"><span class="tile-name">${t.name}</span>${healthBand(t.band)}</div>
       </a>`)}</div>
-    </div>`) : html`<div class="empty"><strong>No monitored assets</strong><span>Seed the demo data to load the Unit 100 asset model.</span></div>`}
+    </div>`) : html`<div class="empty"><strong>No monitored assets</strong><span>The Unit 100 asset model has not been loaded yet.</span></div>`}
     <div class="legend">
       <span>${bandShape('healthy', 10)}Healthy ≥ 80</span>
       <span>${bandShape('degraded', 10)}Degraded 50–79</span>

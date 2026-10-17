@@ -57,10 +57,10 @@ function showLogin() {
   render(root, html`<div class="login-wrap"><div class="login">
     <div class="brand">
       <svg width="40" height="40" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="11" fill="#3448F0"></rect><circle cx="17" cy="17" r="8" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="38 12.3" transform="rotate(-50 17 17)"></circle><circle cx="23.1" cy="11.9" r="2.4" fill="#FFFFFF"></circle></svg>
-      <span style="display: flex; flex-direction: column"><span class="brand-name" style="font-size: 22px">SafeLoop <span>AI</span></span><span class="brand-sub">MVP · Unit 100 · demo login</span></span>
+      <span style="display: flex; flex-direction: column"><span class="brand-name" style="font-size: 22px">SafeLoop <span>AI</span></span><span class="brand-sub">MVP · Unit 100 · sign in</span></span>
     </div>
     <div style="display: flex; flex-direction: column; gap: 6px">
-      <h1 class="display" style="font-size: 24px; font-weight: 600">Choose a demo user</h1>
+      <h1 class="display" style="font-size: 24px; font-weight: 600">Choose a user</h1>
       <p class="ink-2" style="font-size: 14px">Each persona has a different role. What you can do on each screen follows the role.</p>
     </div>
     <div class="persona-list">
@@ -70,7 +70,7 @@ function showLogin() {
         <span class="persona-can">${p.can}</span>
       </button>`)}
     </div>
-    <p class="muted" style="font-size: 12px">Demonstration system. Public and synthetic data only. Advisory only.</p>
+    <p class="muted" style="font-size: 12px">Advisory only.</p>
   </div></div>`);
 }
 
@@ -123,7 +123,7 @@ function renderUser() {
 }
 
 $('user-chip').addEventListener('click', () => {
-  if (confirm(`Signed in as ${auth.user?.display_name}. Switch to another demo user?`)) {
+  if (confirm(`Signed in as ${auth.user?.display_name}. Switch to another user?`)) {
     auth.logout();
     stop();
     showLogin();
@@ -262,7 +262,7 @@ function stop() {
 
 auth.onUnauthorized = () => {
   stop();
-  toast('Your session expired. Choose a demo user to continue.');
+  toast('Your session expired. Choose a user to continue.');
   showLogin();
 };
 

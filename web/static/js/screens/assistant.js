@@ -6,7 +6,7 @@ import {
 } from '../ui.js';
 
 export const title = 'Knowledge assistant';
-export const subtitle = 'Synthetic Unit 100 documents · every answer cited or flagged';
+export const subtitle = 'Unit 100 documents · every answer cited or flagged';
 
 const CHAT_ROLES_DENY = ['auditor'];
 const SUGGESTIONS = [
@@ -279,7 +279,6 @@ function sourcePanel() {
       ${chat.docs == null ? loading(300) : chat.docs.length ? html`<div class="doc-list">${chat.docs.map((d) => html`<button type="button" class="cite" data-doc="${d.doc_code}" style="border: none; text-align: left; cursor: pointer; font: inherit">
         <span class="badge-icon" style="width: 28px; height: 28px; border-radius: 9px; background: var(--accent-soft)">${icon('doc', { size: 14, stroke: '#3448F0' })}</span>
         <span class="cite-body"><span class="mono" style="font-size: 13px">${d.doc_code}</span><span class="muted" style="font-size: 12px">${d.title}</span></span>
-        ${d.is_synthetic ? html`<span class="tag">Synthetic</span>` : ''}
       </button>`)}</div>` : html`<div class="empty"><strong>No documents indexed</strong><span>Run the ingest job to load the corpus.</span></div>`}
       <p class="muted" style="font-size: 13px">Retrieved by keyword + vector search. Document text is treated as data, never as instructions.</p>
     </aside>`;
@@ -295,7 +294,6 @@ function sourcePanel() {
       <div style="display: flex; flex-direction: column; gap: 6px">
         <div style="display: flex; justify-content: space-between; gap: 8px; align-items: center">
           <span class="muted" style="font-size: 13px">${titleCase(d?.type || 'Document')}</span>
-          ${d?.is_synthetic ?? src.is_synthetic ? html`<span class="tag">Synthetic</span>` : ''}
         </div>
         <h2 class="display" style="font-size: 20px; font-weight: 600">${d?.title || src.title || src.doc_code}</h2>
       </div>
