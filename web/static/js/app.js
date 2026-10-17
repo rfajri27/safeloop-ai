@@ -12,7 +12,9 @@ import * as audit from './screens/audit.js';
 import * as evaluation from './screens/eval.js';
 
 const UNIT = 'U100';
-const REFRESH_MS = 10000;
+const REFRESH_MS = 10000;      // fallback poll; live events refresh sooner
+const LIVE_THROTTLE_MS = 2000; // at most one event-driven refresh per window (replay ticks every 0.25-2 s)
+const HEALTH_MS = 30000;
 const REPLAY_ROLES = ['reliability_engineer', 'process_safety_engineer', 'admin'];
 
 const ROUTES = {
@@ -47,6 +49,7 @@ export const shell = {
 const $ = (id) => document.getElementById(id);
 let cleanup = null;
 let timer = null;
+let healthTimer = null;
 
 // ---------- Login ----------
 
@@ -198,19 +201,63 @@ on($('replay-root'), 'click', 'button[data-act]', async (e, btn) => {
 
 // ---------- Live state ----------
 
-async function refreshShell() {
-  const [ov, health] = await Promise.allSettled([
-    api.get(`/units/${UNIT}/overview`),
-    api.raw('GET', '/health', { anonymous: true }),
-  ]);
-  if (ov.status === 'fulfilled') {
-    shell.overview = ov.value.data;
+let inflight = null;
+let refreshAgain = false;
+
+/** Reload the overview. Calls made while one is in flight share it, then trigger one more pass. */
+function refreshShell() {
+  if (inflight) {
+    refreshAgain = true;
+    return inflight;
   }
-  shell.health = health.status === 'fulfilled' ? health.value.data : health.reason?.data ?? null;
+  inflight = loadShell().finally(() => {
+    inflight = null;
+    if (refreshAgain) {
+      refreshAgain = false;
+      refreshShell();
+    }
+  });
+  return inflight;
+}
+
+async function loadShell() {
+  try {
+    shell.overview = (await api.get(`/units/${UNIT}/overview`)).data;
+  } catch { /* keep the last overview; the next refresh retries */ }
   renderReplay();
-  renderHealth();
   updateBadges();
   window.dispatchEvent(new CustomEvent('shell:update'));
+}
+
+async function refreshHealth() {
+  try {
+    shell.health = (await api.raw('GET', '/health', { anonymous: true })).data;
+  } catch (err) {
+    shell.health = err.data ?? null;
+  }
+  renderHealth();
+}
+
+// Replay ticks, band changes, re-scores and approvals arrive on the unit's SSE stream;
+// each one schedules a refresh, throttled so a fast replay does not flood the API.
+let live = null;
+let liveTimer = null;
+let lastLiveRefresh = 0;
+
+function onLiveEvent() {
+  if (liveTimer) return;
+  const wait = Math.max(0, lastLiveRefresh + LIVE_THROTTLE_MS - Date.now());
+  liveTimer = setTimeout(() => {
+    liveTimer = null;
+    lastLiveRefresh = Date.now();
+    refreshShell();
+  }, wait);
+}
+
+function connectLive() {
+  live?.close();
+  live = new EventSource(`/api/v1/units/${UNIT}/events/stream?access_token=${encodeURIComponent(auth.token)}`);
+  live.addEventListener('CUSTOM', onLiveEvent);
 }
 
 // ---------- Router ----------
@@ -249,13 +296,24 @@ window.addEventListener('shell:update', () => {
 function start() {
   $('app').hidden = false;
   renderUser();
-  refreshShell().then(route);
+  // Screens that need the overview await shell.refresh(), which joins this request.
+  refreshShell();
+  refreshHealth();
+  route();
+  connectLive();
   clearInterval(timer);
   timer = setInterval(refreshShell, REFRESH_MS);
+  clearInterval(healthTimer);
+  healthTimer = setInterval(refreshHealth, HEALTH_MS);
 }
 
 function stop() {
   clearInterval(timer);
+  clearInterval(healthTimer);
+  clearTimeout(liveTimer);
+  liveTimer = null;
+  live?.close();
+  live = null;
   if (typeof cleanup === 'function') cleanup();
   cleanup = null;
 }

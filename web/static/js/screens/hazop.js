@@ -165,7 +165,6 @@ function drawer(s, shell) {
       <span class="ink-2" style="font-size: 13px; line-height: 1.5">The Red Team agent proposes up to 2 new or worsened scenarios for this row. The Judge then checks, in code, that every entity is in the asset model, every citation resolves and nothing reads like a control action. Only passed proposals reach the approval queue.</span>
       ${allowed ? '' : html`<span class="muted" style="font-size: 13px">Signed in as ${shell.user?.display_name}: only a process safety engineer or admin can start a run.</span>`}
     </div>`}
-    <p class="muted" style="font-size: 13px">The Judge runs in code, not in the model. Blocked proposals stay in the audit log with their reason.</p>
     <div style="display: flex; gap: 8px; flex-wrap: wrap">
       ${runBtn(run ? 'Run again' : 'Run Red Team')}
       ${run ? html`<a class="btn primary" style="flex: 1 1 auto" href="#/approvals">${icon('arrow', { size: 18 })}Open in approvals</a>` : ''}

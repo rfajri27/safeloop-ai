@@ -35,6 +35,7 @@ from app.repositories.sensor_tag_repository import SensorTagRepository
 from app.services.audit_records import audit_id
 from app.services.live_state import get_live_run, list_asset_health, list_hazop_rows, risk_band
 from app.services.plant_model import load_plant_model
+from app.utils.live_cache import live_cached
 from app.utils.response import response_error, response_success
 
 WHY_RULES = ("R-L-01", "R-L-02", "R-S-01")
@@ -57,6 +58,7 @@ class HazopService:
         """Initialize HazopService with a DB session."""
         self.db = db
 
+    @live_cached
     async def get_rows(
         self,
         node: Optional[str] = None,
@@ -76,6 +78,7 @@ class HazopService:
 
         return response_success({"nodes": [nodes[code] for code in sorted(nodes)]})
 
+    @live_cached
     async def get_matrix(self) -> JSONResponse:
         """Return all 25 cells with live and design-basis rows, moved rows and rule set version."""
         run = await get_live_run(self.db)
@@ -119,6 +122,7 @@ class HazopService:
             "run_id": run.id if run else None,
         })
 
+    @live_cached
     async def get_row(self, row_code: str) -> JSONResponse:
         """Return one row with versions, safeguards and proposals; 404 if unknown."""
         rows_repo = HazopRowRepository(self.db)
@@ -160,6 +164,7 @@ class HazopService:
             "proposals": await self._proposals([v.id for v in versions]),
         })
 
+    @live_cached
     async def get_why(self, row_code: str) -> JSONResponse:
         """Return the "Why it moved" panel; unmoved rows return live = design_basis and trigger = null."""
         row = await HazopRowRepository(self.db).get_current_by_code(row_code)
@@ -213,6 +218,7 @@ class HazopService:
         data["computed_at"] = rescore.computed_at
         return response_success(data)
 
+    @live_cached
     async def get_active_rule_set(self) -> JSONResponse:
         """Return the active risk rule set and its version."""
         rule_set = await RiskRuleSetRepository(self.db).get_active()

@@ -33,6 +33,7 @@ from app.services.live_state import (
     list_hazop_rows,
     risk_band,
 )
+from app.utils.live_cache import live_cached
 from app.utils.response import response_error, response_success
 from app.utils.sse import SSE_HEADERS, sse_frame, sse_ping
 
@@ -52,6 +53,7 @@ class UnitService:
         """Initialize UnitService with a DB session."""
         self.db = db
 
+    @live_cached
     async def get_overview(self, unit_code: str) -> JSONResponse:
         """Build the one-call Overview payload. Headline text comes from code templates, never the LLM."""
         unit = await UnitRepository(self.db).get_by_code(unit_code)
@@ -236,6 +238,9 @@ class UnitService:
         unit = await UnitRepository(self.db).get_by_code(unit_code)
         if not unit:
             return response_error(f"Unit {unit_code} not found", code=404)
+        # The stream only reads Redis; without this the request session would hold
+        # a pooled connection idle-in-transaction for as long as the client listens.
+        await self.db.close()
         return StreamingResponse(
             self._event_frames(unit.code, last_event_id),
             media_type="text/event-stream",

@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.audit_log_repository import AuditLogRepository
 from app.repositories.user_repository import UserRepository
 from app.services.audit_records import ACTOR_FILTERS, AUDIT_TYPES, audit_event_view, completeness_pct
+from app.utils.live_cache import live_cached
 from app.utils.ids import is_uuid
 from app.utils.response import response_error, response_success
 
@@ -28,6 +29,7 @@ class AuditService:
         self.db = db
         self.repo = AuditLogRepository(db)
 
+    @live_cached
     async def get_events(
         self,
         event_type: Optional[str] = None,
@@ -64,6 +66,7 @@ class AuditService:
             metadata={"total": total, "skip": skip, "limit": limit},
         )
 
+    @live_cached
     async def get_summary(self, run_id: Optional[str] = None) -> JSONResponse:
         """Return {complete_records_pct, events, blocked_by_judge, refused}."""
         if run_id and not is_uuid(run_id):

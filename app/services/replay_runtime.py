@@ -43,6 +43,7 @@ from app.repositories.health_assessment_repository import HealthAssessmentReposi
 from app.services import unit_events
 from app.services.audit_records import audit_entry
 from app.services.plant_model import PlantModel, load_plant_model, load_row_inputs
+from app.utils import live_cache
 from app.utils.ids import new_id
 
 logger = logging.getLogger(__name__)
@@ -104,6 +105,7 @@ class ReplayManager:
 
     def state_of(self, run: ReplayRun) -> str:
         """running / paused / finished. A run with no task in this process is paused."""
+        live_cache.depends_on(live_cache.REPLAY_STATE)
         if run.ended_at is not None:
             return "reset"
         if run.final_hour is not None:
@@ -113,6 +115,7 @@ class ReplayManager:
 
     def hour_of(self, run: ReplayRun) -> Optional[int]:
         """Last replay hour written, if this process knows it."""
+        live_cache.depends_on(live_cache.REPLAY_STATE)
         ctl = self._runs.get(run.id)
         return ctl.last_hour if ctl else None
 
@@ -125,6 +128,7 @@ class ReplayManager:
         ctl.state = RUNNING
         ctl.resume_event.set()
         self._runs[run.id] = ctl
+        live_cache.bump(live_cache.REPLAY_STATE)
         ctl.task = asyncio.create_task(self._loop(ctl), name=f"replay-{run.id}")
         return ctl
 
@@ -139,11 +143,13 @@ class ReplayManager:
         ctl = self._runs[run_id]
         ctl.state = PAUSED
         ctl.resume_event.clear()
+        live_cache.bump(live_cache.REPLAY_STATE)
 
     def resume(self, run_id: str) -> None:
         ctl = self._runs[run_id]
         ctl.state = RUNNING
         ctl.resume_event.set()
+        live_cache.bump(live_cache.REPLAY_STATE)
 
     def mark_rows_changed(self) -> None:
         """An approval changed the register; the next band change reloads the rows."""
@@ -154,12 +160,14 @@ class ReplayManager:
         ctl = self._runs.get(run_id)
         if ctl:
             ctl.speed = speed
+            live_cache.bump(live_cache.REPLAY_STATE)
 
     async def stop(self, run_id: str) -> Optional[int]:
         """Cancel a run's task (reset). Returns the last hour written."""
         ctl = self._runs.pop(run_id, None)
         if not ctl:
             return None
+        live_cache.bump(live_cache.REPLAY_STATE)
         await self._cancel(ctl)
         return ctl.last_hour
 
@@ -193,11 +201,13 @@ class ReplayManager:
                     _build_state(ctl, hour - 1 if hour > 0 else None)
                     ctl.state = PAUSED
                     ctl.resume_event.clear()
+                    live_cache.bump(live_cache.REPLAY_STATE)
                     await unit_events.publish(ctl.plant.unit_code, [
                         ("replay_state", {"run_id": ctl.run_id, "state": PAUSED, "speed": ctl.speed, "reason": "tick_failed"}),
                     ])
                     continue
                 ctl.next_hour = hour + 1
+                live_cache.bump(live_cache.REPLAY_STATE)
                 delay = tick_seconds(ctl.speed, env.replay_seconds_per_hour) - (loop.time() - started)
                 if delay > 0:
                     await asyncio.sleep(delay)
@@ -455,6 +465,7 @@ class ReplayManager:
             ))
             await db.commit()
         ctl.state = FINISHED
+        live_cache.bump(live_cache.REPLAY_STATE)
         await unit_events.publish(ctl.plant.unit_code, [
             ("replay_state", {"run_id": ctl.run_id, "state": FINISHED, "speed": ctl.speed, "replay_hour": last}),
         ])

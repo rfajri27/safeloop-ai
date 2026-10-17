@@ -25,6 +25,7 @@ from app.services.plant_model import DEFAULT_UNIT, load_plant_model
 from app.services.replay_runtime import FINISHED, PAUSED, RUNNING, replay_manager
 from app.utils import idempotency
 from app.utils.ids import is_uuid
+from app.utils.live_cache import live_cached
 from app.utils.response import response_error, response_success
 
 WITHDRAW_REASON = "Replay run reset; the re-score is no longer live."
@@ -93,6 +94,7 @@ class ReplayService:
         response = response_success(self._view(run, RUNNING, 0), msg="Accepted", code=202)
         return await idempotency.remember("replay-runs", user.id, idempotency_key, response)
 
+    @live_cached
     async def get_current_run(self) -> JSONResponse:
         """Return the active run with state, replay_hour and speed (data is null when none)."""
         run = await self.runs.get_active()

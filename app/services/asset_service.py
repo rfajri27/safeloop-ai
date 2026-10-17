@@ -22,6 +22,7 @@ from app.repositories.sensor_reading_repository import SensorReadingRepository
 from app.repositories.sensor_tag_repository import SensorTagRepository
 from app.services.live_state import get_live_run, list_asset_health, list_hazop_rows
 from app.services.plant_model import PlantModel, load_plant_model
+from app.utils.live_cache import live_cached
 from app.utils.response import response_error, response_success
 
 MAX_TREND_POINTS = 500
@@ -66,6 +67,7 @@ class AssetService:
         """Initialize AssetService with a DB session."""
         self.db = db
 
+    @live_cached
     async def get_assets(
         self,
         node: Optional[str] = None,
@@ -84,6 +86,7 @@ class AssetService:
             metadata={"total": len(items), "skip": skip, "limit": limit}
         )
 
+    @live_cached
     async def get_asset(self, tag: str) -> JSONResponse:
         """Return asset detail; 404 for an unknown tag."""
         assets = AssetRepository(self.db)
@@ -147,6 +150,7 @@ class AssetService:
             "feeds_rows": await self._feeds_rows(asset, plant, run),
         })
 
+    @live_cached
     async def get_trend(
         self,
         tag: str,
@@ -197,6 +201,7 @@ class AssetService:
             "summary": _trend_summary(selected, points),
         })
 
+    @live_cached
     async def get_health_history(self, tag: str) -> JSONResponse:
         """Return [{replay_hour, health_index, band}] for the current run."""
         asset = await AssetRepository(self.db).get_by_tag(tag)
