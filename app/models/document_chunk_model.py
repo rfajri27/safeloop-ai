@@ -6,7 +6,7 @@ from app.models.columns import uuid_fk, uuid_pk
 
 
 class DocumentChunk(Base):
-    """A retrievable passage of a document, keyed in Qdrant by qdrant_point_id."""
+    """A retrievable passage of a document, keyed in the vector store (Chroma) by vector_id."""
     __tablename__ = "document_chunks"
     __table_args__ = (
         UniqueConstraint("document_id", "chunk_index", name="uq_document_chunks_document_index"),
@@ -19,7 +19,8 @@ class DocumentChunk(Base):
     page = Column(Integer)
     section = Column(String(200))
     token_count = Column(Integer)
-    qdrant_point_id = Column(UUID(as_uuid=False), nullable=False, unique=True)
+    # Column keeps its original name; it is the Chroma record id
+    vector_id = Column("qdrant_point_id", UUID(as_uuid=False), nullable=False, unique=True)
     embedding_model = Column(String(64), nullable=False)
 
     def __repr__(self) -> str:

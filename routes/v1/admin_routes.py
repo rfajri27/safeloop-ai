@@ -1,7 +1,7 @@
 """Admin API routes.
 
 Endpoints:
-    POST /admin/ingest              - Re-ingest the synthetic corpus into Qdrant
+    POST /admin/ingest              - Re-ingest the synthetic corpus into Chroma
     POST /admin/seed                - Load asset model, HAZOP and users from data/
     GET  /agents/{agent_name}/graph - Mermaid view of a LangGraph graph (development only)
 """
@@ -22,7 +22,7 @@ def get_admin_service(db: AsyncSession = Depends(get_db)) -> AdminService:
     return AdminService(db)
 
 
-@router.post("/admin/ingest", summary="Re-ingest the corpus into Qdrant")
+@router.post("/admin/ingest", summary="Re-ingest the corpus into Chroma")
 async def ingest(
     user: CurrentUser = Depends(admin_user),
     service: AdminService = Depends(get_admin_service)

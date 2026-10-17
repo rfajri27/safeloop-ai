@@ -41,8 +41,11 @@ class Settings(BaseSettings):
 
     # AI and vectors (spec Section 12)
     llm_enabled: bool = True
-    qdrant_url: str = ""
-    qdrant_collection: str = "unit100_chunks"
+    chroma_persist_dir: str = ".chroma"
+    chroma_host: str = ""
+    chroma_port: int = 8000
+    chroma_ssl: bool = False
+    chroma_collection: str = "unit100_chunks"
     google_genai_use_vertexai: bool = False
     google_cloud_project: str = ""
     google_cloud_location: str = "us-central1"
@@ -66,6 +69,12 @@ class Settings(BaseSettings):
     def demo_data_path(self) -> Path:
         """Absolute demo data directory (relative paths resolve from the repo root)."""
         path = Path(self.demo_data_dir)
+        return path if path.is_absolute() else PROJECT_ROOT / path
+
+    @property
+    def chroma_persist_path(self) -> Path:
+        """Embedded Chroma directory (relative paths resolve from the repo root)."""
+        path = Path(self.chroma_persist_dir)
         return path if path.is_absolute() else PROJECT_ROOT / path
 
 

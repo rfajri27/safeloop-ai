@@ -7,7 +7,7 @@ from app.models.enums import DataOrigin, data_origin_enum, doc_type_enum
 
 
 class Document(Base):
-    """Source document metadata; vectors live in Qdrant."""
+    """Source document metadata; vectors live in Chroma."""
     __tablename__ = "documents"
     __table_args__ = (
         UniqueConstraint("doc_code", "revision", name="uq_documents_doc_code_revision"),

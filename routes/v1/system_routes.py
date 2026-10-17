@@ -1,7 +1,7 @@
 """System API routes.
 
 Endpoints:
-    GET /health - DB, Redis, Qdrant reachable; LLM gateway flag (public)
+    GET /health - DB, Redis, Chroma reachable; LLM gateway flag (public)
 """
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,5 +18,5 @@ def get_system_service(db: AsyncSession = Depends(get_db)) -> SystemService:
 
 @router.get("/health", summary="Dependency health and LLM flag")
 async def health_check(service: SystemService = Depends(get_system_service)):
-    """Check DB, Redis and Qdrant. Never calls Gemini."""
+    """Check DB, Redis and Chroma. Never calls Gemini."""
     return await service.health_check()

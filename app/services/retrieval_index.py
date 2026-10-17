@@ -1,14 +1,17 @@
 """Hybrid retrieval over the current document chunks (spec Section 10).
 
 Sparse: BM25 over chunk text, computed in-process (tag-aware tokens, so
-`P-101` and `P-101B` stay distinct). Dense: `gemini-embedding-001` vectors
-(768 dimensions, cosine), from Qdrant when QDRANT_URL is set, else held in
-memory and embedded once per process. The two rankings are fused with
-reciprocal rank fusion (k = 8); the fused score is normalised to 0..1 so it can
-be compared with KB_MIN_SCORE. Superseded revisions are never indexed.
+`P-101` and `P-101B` stay distinct). Dense: cosine similarity over
+`gemini-embedding-001` vectors (768 dimensions) stored in and searched by
+Chroma. Chroma persists the vectors, so a chunk is embedded once per content
+hash, not once per process; if Chroma is unreachable the vectors are held in
+memory instead. The two rankings are fused with reciprocal rank fusion (k = 8);
+the fused score is normalised to 0..1 so it can be compared with KB_MIN_SCORE.
+Superseded revisions are never indexed.
 
 Filters: `is_current` always; the document's asset tags when `asset_tag` is
-given; document types when `doc_types` is given.
+given; document types when `doc_types` is given. Both halves apply the same
+filters (Chroma as a metadata `where` over the candidate ids).
 """
 import asyncio
 import logging
@@ -16,14 +19,14 @@ import math
 import re
 from collections import Counter
 from dataclasses import dataclass, field
-from typing import Optional, Sequence
+from typing import Any, Optional, Sequence
 from config.ai_services.genai_client import genai_client
 from config.databases.postgresql import AsyncSessionLocal
 from config.settings import env
 from app.engines.corpus import headings_in, section_title
 from app.repositories.document_asset_repository import DocumentAssetRepository
 from app.repositories.document_chunk_repository import DocumentChunkRepository
-from app.services import qdrant_store
+from app.services import chroma_store
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +100,9 @@ class RetrievalIndex:
         self.doc_freq: Counter = Counter()
         self.avg_length = 0.0
         self.loaded = False
+        self.synced = False   # Chroma reconciled with the current chunks
         self._lock = asyncio.Lock()
+        self._sync_lock = asyncio.Lock()
 
     @property
     def document_count(self) -> int:
@@ -105,6 +110,7 @@ class RetrievalIndex:
 
     def invalidate(self) -> None:
         self.loaded = False
+        self.synced = False
         self.chunks = []
         self.vectors = {}
 
@@ -129,7 +135,7 @@ class RetrievalIndex:
                     chunk_id=chunk.id, doc_code=doc.doc_code, doc_title=doc.title, doc_type=doc.type.value,
                     revision=doc.revision, is_synthetic=doc.origin.value == "synthetic", section=chunk.section,
                     title=section_title(headings[0]) if headings else None, text=chunk.text,
-                    asset_tags=doc_tags.get(doc.id, ()), point_id=chunk.qdrant_point_id,
+                    asset_tags=doc_tags.get(doc.id, ()), point_id=chunk.vector_id,
                     tokens=tokens, length=sum(tokens.values()),
                 ))
             self.chunks = chunks
@@ -137,15 +143,36 @@ class RetrievalIndex:
             self.avg_length = (sum(c.length for c in chunks) / len(chunks)) if chunks else 0.0
             self.loaded = True
 
+    async def sync_vectors(self) -> dict[str, Any]:
+        """Reconcile Chroma with the current chunks: embed and upsert the missing ones, delete the rest.
+
+        Raises if Chroma or the embedding call fails; callers fall back to in-memory vectors.
+        """
+        await self.ensure_loaded()
+        async with self._sync_lock:
+            chunks = {c.point_id: c for c in self.chunks}
+            stored = await chroma_store.list_ids()
+            stale = [pid for pid in stored if pid not in chunks]
+            missing = [c for pid, c in chunks.items() if pid not in stored]
+            await chroma_store.delete(stale)
+            if missing:
+                vectors = await genai_client.embed_documents([_embedding_text(c) for c in missing])
+                await chroma_store.upsert([
+                    {"id": c.point_id, "vector": vector, "document": c.text, "metadata": _metadata(c)}
+                    for c, vector in zip(missing, vectors)
+                ])
+            self.synced = True
+            return {"embedded": len(missing), "removed_vectors": len(stale), "stored_vectors": len(chunks)}
+
     async def ensure_vectors(self) -> bool:
-        """Embed every chunk once (in-memory dense backend). False if embeddings are unavailable."""
+        """Embed every chunk once (in-memory fallback when Chroma is unavailable). False if embeddings are unavailable."""
         if not env.llm_enabled or not self.chunks:
             return False
         missing = [c for c in self.chunks if c.chunk_id not in self.vectors]
         if not missing:
             return True
         try:
-            vectors = await genai_client.embed_documents([f"{c.doc_title}\n{c.text}" for c in missing])
+            vectors = await genai_client.embed_documents([_embedding_text(c) for c in missing])
         except Exception:
             logger.exception("Embedding chunks failed; retrieval falls back to BM25 only")
             return False
@@ -170,7 +197,13 @@ class RetrievalIndex:
                 scored.append((chunk, score))
         return sorted(scored, key=lambda pair: -pair[1])
 
-    async def _dense(self, query: str, candidates: Sequence[IndexedChunk], k: int) -> list[tuple[IndexedChunk, float]]:
+    async def _dense(
+        self,
+        query: str,
+        candidates: Sequence[IndexedChunk],
+        where: dict[str, Any],
+        k: int,
+    ) -> list[tuple[IndexedChunk, float]]:
         if not env.llm_enabled:
             return []
         try:
@@ -179,12 +212,13 @@ class RetrievalIndex:
             logger.exception("Query embedding failed; BM25 only")
             return []
         allowed = {c.point_id: c for c in candidates}
-        if qdrant_store.enabled():
-            try:
-                hits = await qdrant_store.search(query_vector, list(allowed), limit=k)
-                return [(allowed[pid], score) for pid, score in hits if pid in allowed]
-            except Exception:
-                logger.exception("Qdrant search failed; using in-memory vectors")
+        try:
+            if not self.synced:
+                await self.sync_vectors()
+            hits = await chroma_store.query(query_vector, list(allowed), where, limit=k)
+            return [(allowed[pid], score) for pid, score in hits if pid in allowed]
+        except Exception:
+            logger.exception("Chroma search failed; using in-memory vectors")
         if not await self.ensure_vectors():
             return []
         scored = []
@@ -193,6 +227,12 @@ class RetrievalIndex:
             if vector:
                 scored.append((chunk, _cosine(query_vector, vector)))
         return sorted(scored, key=lambda pair: -pair[1])[:k]
+
+    def _filter(self, asset_tag: Optional[str], doc_types: Optional[Sequence[str]]) -> list[IndexedChunk]:
+        return [
+            c for c in self.chunks
+            if (not asset_tag or asset_tag in c.asset_tags) and (not doc_types or c.doc_type in doc_types)
+        ]
 
     async def search(
         self,
@@ -203,17 +243,15 @@ class RetrievalIndex:
     ) -> list[Hit]:
         """Up to k chunks, best first, each with a fused score in 0..1."""
         await self.ensure_loaded()
-        candidates = [
-            c for c in self.chunks
-            if (not asset_tag or asset_tag in c.asset_tags) and (not doc_types or c.doc_type in doc_types)
-        ]
+        candidates = self._filter(asset_tag, doc_types)
         if asset_tag and not candidates:   # unknown tag: do not filter everything away
-            candidates = [c for c in self.chunks if not doc_types or c.doc_type in doc_types]
+            asset_tag = None
+            candidates = self._filter(None, doc_types)
         if not candidates:
             return []
 
         sparse = self._bm25(tokenize(query), candidates)[:k * 2]
-        dense = await self._dense(query, candidates, k * 2)
+        dense = await self._dense(query, candidates, _where(asset_tag, doc_types), k * 2)
         lists = [ranked for ranked in (sparse, dense) if ranked]
         if not lists:
             return []
@@ -233,6 +271,28 @@ class RetrievalIndex:
             )
             for cid, score in top
         ]
+
+
+def _embedding_text(chunk: IndexedChunk) -> str:
+    return f"{chunk.doc_title}\n{chunk.text}"
+
+
+def _metadata(chunk: IndexedChunk) -> dict[str, Any]:
+    return {
+        "chunk_id": chunk.chunk_id, "doc_code": chunk.doc_code, "doc_type": chunk.doc_type,
+        "asset_tags": list(chunk.asset_tags), "revision": chunk.revision, "is_current": True,
+        "is_synthetic": chunk.is_synthetic, "section": chunk.section,
+    }
+
+
+def _where(asset_tag: Optional[str], doc_types: Optional[Sequence[str]]) -> dict[str, Any]:
+    """Chroma metadata filter matching the candidate filter."""
+    clauses: list[dict[str, Any]] = [{"is_current": True}]
+    if asset_tag:
+        clauses.append({"asset_tags": {"$contains": asset_tag}})
+    if doc_types:
+        clauses.append({"doc_type": {"$in": list(doc_types)}})
+    return clauses[0] if len(clauses) == 1 else {"$and": clauses}
 
 
 def _cosine(a: Sequence[float], b: Sequence[float]) -> float:

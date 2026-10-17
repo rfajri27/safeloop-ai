@@ -1,7 +1,7 @@
 """Admin service for corpus ingestion, seeding and agent graph views.
 
 Endpoints served:
-    POST /admin/ingest            - Re-ingest the synthetic corpus into Qdrant (202)
+    POST /admin/ingest            - Re-ingest the synthetic corpus into Chroma (202)
     POST /admin/seed              - Load asset model, HAZOP and users from data/
     GET  /agents/{agent_name}/graph - Mermaid view of a LangGraph graph (development only)
 """
@@ -23,14 +23,14 @@ from app.repositories.document_chunk_repository import DocumentChunkRepository
 from app.repositories.document_repository import DocumentRepository
 from app.repositories.replay_run_repository import ReplayRunRepository
 from app.schemas.auth_schema import CurrentUser
-from app.services import qdrant_store
+from app.services import chroma_store
 from app.services.replay_runtime import RUNNING, replay_manager
 from app.services.retrieval_index import retrieval_index
 from app.utils.response import response_error, response_success
 
 logger = logging.getLogger(__name__)
 
-# Namespace for deterministic Qdrant point ids (doc, revision, index, content hash)
+# Namespace for deterministic vector ids (doc, revision, index, content hash)
 POINT_NAMESPACE = uuid.UUID("5a1e100b-0000-4000-8000-00000000c0de")
 SEED_COUNT_TABLES = (
     "sites", "units", "process_nodes", "assets", "asset_links", "sensor_tags",
@@ -52,7 +52,7 @@ class AdminService:
         self.db = db
 
     async def ingest(self, user: CurrentUser) -> JSONResponse:
-        """Re-chunk data/corpus/*.md, embed, upsert into Qdrant; idempotent by content hash.
+        """Re-chunk data/corpus/*.md, embed, upsert into Chroma; idempotent by content hash.
 
         Chunk rows keep their ids across re-ingests (citations point at them):
         an unchanged chunk is skipped, a changed one is updated in place.
@@ -67,7 +67,6 @@ class AdminService:
         assets = {a.tag: a.id for a in await AssetRepository(self.db).list_by_unit(limit=1000)}
         embedding_model = env.gemini_embedding_model if env.llm_enabled else "bm25-only"
         stats = {"documents": 0, "chunks": 0, "inserted": 0, "updated": 0, "skipped": 0, "removed": 0}
-        stale_points: list[str] = []
 
         for doc in load_corpus(corpus_dir):
             document = await docs_repo.get_by_code_revision(doc.doc_code, doc.revision)
@@ -87,19 +86,18 @@ class AdminService:
                 stats["chunks"] += 1
                 point_id = str(uuid.uuid5(POINT_NAMESPACE, f"{doc.doc_code}:{doc.revision}:{chunk.chunk_index}:{chunk.content_hash}"))
                 existing = await chunks_repo.get_by_document_index(document.id, chunk.chunk_index)
-                if existing and existing.qdrant_point_id == point_id:
+                if existing and existing.vector_id == point_id:
                     stats["skipped"] += 1
                     continue
                 if existing:
-                    stale_points.append(existing.qdrant_point_id)
                     existing.text, existing.section, existing.token_count = chunk.text, chunk.section, chunk.token_count
-                    existing.qdrant_point_id, existing.embedding_model = point_id, embedding_model
+                    existing.vector_id, existing.embedding_model = point_id, embedding_model
                     stats["updated"] += 1
                 else:
                     self.db.add(DocumentChunk(
                         document_id=document.id, chunk_index=chunk.chunk_index, text=chunk.text,
                         section=chunk.section, token_count=chunk.token_count,
-                        qdrant_point_id=point_id, embedding_model=embedding_model,
+                        vector_id=point_id, embedding_model=embedding_model,
                     ))
                     stats["inserted"] += 1
             await self.db.flush()
@@ -108,46 +106,30 @@ class AdminService:
             cited = await CitationRepository(self.db).cited_chunk_ids([c.id for c in extra])
             for chunk_row in extra:
                 if chunk_row.id not in cited:
-                    stale_points.append(chunk_row.qdrant_point_id)
                     await self.db.delete(chunk_row)
                     stats["removed"] += 1
         await self.db.commit()
 
         retrieval_index.invalidate()
         await retrieval_index.ensure_loaded()
-        vectors = await self._index_vectors(stale_points)
+        vectors = await self._index_vectors()
         return response_success(
             {**stats, "indexed_documents": retrieval_index.document_count, **vectors},
             msg="Accepted",
             code=202,
         )
 
-    async def _index_vectors(self, stale_points: list[str]) -> dict:
-        """Embed the current chunks (dense half of the hybrid index); upsert to Qdrant when configured."""
+    async def _index_vectors(self) -> dict:
+        """Sync Chroma with the current chunks (dense half of the hybrid index); stale vectors are removed."""
         if not env.llm_enabled:
             return {"embedded": 0, "vector_store": "disabled (LLM_ENABLED=false): BM25 only"}
+        try:
+            return {**await retrieval_index.sync_vectors(), "vector_store": chroma_store.describe()}
+        except Exception:
+            logger.exception("Chroma sync failed")
         if not await retrieval_index.ensure_vectors():
             return {"embedded": 0, "vector_store": "embedding failed: BM25 only"}
-        if not qdrant_store.enabled():
-            return {"embedded": len(retrieval_index.vectors), "vector_store": "in-process (QDRANT_URL not set)"}
-        try:
-            await qdrant_store.delete(stale_points)
-            await qdrant_store.upsert([
-                {
-                    "id": c.point_id,
-                    "vector": retrieval_index.vectors[c.chunk_id],
-                    "payload": {
-                        "chunk_id": c.chunk_id, "doc_code": c.doc_code, "doc_type": c.doc_type,
-                        "asset_tags": list(c.asset_tags), "revision": c.revision, "is_current": True,
-                        "is_synthetic": c.is_synthetic, "section": c.section,
-                    },
-                }
-                for c in retrieval_index.chunks if c.chunk_id in retrieval_index.vectors
-            ])
-            return {"embedded": len(retrieval_index.vectors), "vector_store": f"qdrant:{env.qdrant_collection}"}
-        except Exception:
-            logger.exception("Qdrant upsert failed")
-            return {"embedded": len(retrieval_index.vectors), "vector_store": "qdrant upsert failed: in-process vectors"}
+        return {"embedded": len(retrieval_index.vectors), "vector_store": "chroma sync failed: in-process vectors"}
 
     async def seed(self, user: CurrentUser) -> JSONResponse:
         """Load asset model, HAZOP, rule set and demo users; 409 if a replay is running.

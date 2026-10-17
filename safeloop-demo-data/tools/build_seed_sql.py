@@ -4,7 +4,7 @@ IDs are deterministic UUIDv5 values, so re-running gives the same file and the
 same IDs on every machine. Every insert is ON CONFLICT DO NOTHING, so loading the
 file twice is safe. Sensor readings, health assessments, re-scores and
 audit events are NOT seeded: the replay engine writes them during a run.
-Document chunks and Qdrant points are written by POST /admin/ingest.
+Document chunks and Chroma vectors are written by POST /admin/ingest.
 
 Usage:
     python build_seed_sql.py DATA_DIR OUT_SQL
