@@ -1,0 +1,123 @@
+{
+  "status": 1,
+  "data": {
+    "row_code": "HZ-N1-003",
+    "deviation": "No reflux to C-200",
+    "cause": "P-101 bearing failure",
+    "design_basis": {
+      "likelihood": 2,
+      "severity": 4,
+      "score": 8,
+      "band": "medium"
+    },
+    "live": {
+      "likelihood": 3,
+      "severity": 4,
+      "score": 12,
+      "band": "high"
+    },
+    "trigger": {
+      "sensor_tag": "P101_DE_VIB_RMS",
+      "value": 6.14,
+      "eng_unit": "mm/s",
+      "at": "2026-10-18T07:20:43.500Z",
+      "replay_hour": 174,
+      "asset_tag": "P-101",
+      "health_index_old": 79,
+      "health_index_new": 66,
+      "band": "degraded"
+    },
+    "rules": [
+      {
+        "rule_id": "R-L-01",
+        "text": "Cause asset Degraded: likelihood +1",
+        "applied": true
+      },
+      {
+        "rule_id": "R-L-02",
+        "text": "Cause asset Critical: likelihood +2 (replaces R-L-01)",
+        "applied": false
+      },
+      {
+        "rule_id": "R-S-01",
+        "text": "A credited BPCS safeguard depends on a Degraded or Critical asset: credit removed, likelihood +1",
+        "applied": false
+      }
+    ],
+    "rule_set_version": "v1",
+    "safeguards": [
+      {
+        "ref_code": "P-101B auto-start",
+        "credited": true,
+        "depends_on": [
+          {
+            "tag": "P-101B",
+            "band": "healthy",
+            "health_index": 100
+          },
+          {
+            "tag": "FT-201",
+            "band": "not_monitored",
+            "health_index": null
+          },
+          {
+            "tag": "S-101",
+            "band": "not_monitored",
+            "health_index": null
+          }
+        ]
+      },
+      {
+        "ref_code": "PAH-201",
+        "credited": true,
+        "depends_on": [
+          {
+            "tag": "PT-201",
+            "band": "not_monitored",
+            "health_index": null
+          }
+        ]
+      },
+      {
+        "ref_code": "PSV-201",
+        "credited": true,
+        "depends_on": [
+          {
+            "tag": "PSV-201",
+            "band": "not_monitored",
+            "health_index": null
+          }
+        ]
+      }
+    ],
+    "citations": [
+      {
+        "index": 1,
+        "target_type": "chunk",
+        "doc_code": "MAN-P101",
+        "section": "6.3",
+        "title": "Bearing lubrication and vibration limits",
+        "is_synthetic": true
+      },
+      {
+        "index": 2,
+        "target_type": "chunk",
+        "doc_code": "HAZOP-U100",
+        "section": "node-1",
+        "title": "Unit 100 HAZOP worksheet, Node 1",
+        "is_synthetic": true
+      },
+      {
+        "index": 3,
+        "target_type": "tag_window",
+        "sensor_tag": "P101_DE_VIB_RMS",
+        "hour_from": 168,
+        "hour_to": 174
+      }
+    ],
+    "latency_s": 0.05,
+    "audit_id": "AUD-0003"
+  },
+  "metadata": null,
+  "message": "Success"
+}

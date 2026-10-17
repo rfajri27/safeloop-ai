@@ -1,0 +1,65 @@
+{
+  "_meta": {
+    "version": "hi.v1",
+    "description": "Health index models used by the Health Agent (app/engines/health_engine.py). HI = clip(100 - 100 * (x - x_healthy) / (x_fail - x_healthy), 0, 100), where x is the smoothed driving feature. Anchors are configuration, illustrative and pending engineer review.",
+    "bands": { "healthy_min": 80, "degraded_min": 50 },
+    "hysteresis_points": 2,
+    "recovery_hold_hours": 24,
+    "note_recovery_hold": "A band may improve only after the HI has stayed in the better band for 24 consecutive replay hours. Prevents flapping during the temporary vibration fall seen in the real IMS test 2 run."
+  },
+  "models": [
+    {
+      "asset": "P-101",
+      "driver_tag": "P101_DE_VIB_RMS",
+      "mode": "rising",
+      "x_healthy": 2.8,
+      "x_fail": 11.2,
+      "smoothing": { "method": "rolling_median", "window_hours": 6 },
+      "anchor_note": "2.8, 4.5, 7.1 and 11.2 mm/s are the zone boundaries commonly used for vibration severity (ISO 10816-3 style). Used here as illustrative anchors."
+    },
+    {
+      "asset": "P-101B",
+      "driver_tag": "P101B_DE_VIB_RMS",
+      "mode": "rising",
+      "x_healthy": 2.0,
+      "x_fail": 11.2,
+      "smoothing": { "method": "rolling_median", "window_hours": 6 }
+    },
+    {
+      "asset": "E-301",
+      "driver_tag": "TV301_POS",
+      "mode": "rising",
+      "x_healthy": 55.0,
+      "x_fail": 90.0,
+      "smoothing": { "method": "rolling_median", "window_hours": 6 },
+      "anchor_note": "Cooling margin: the further TV-301 must open to hold condensate temperature, the less spare cooling E-301 has. 90% open is treated as no margin."
+    },
+    {
+      "asset": "TV-301",
+      "driver_tag": "TV301_POS",
+      "mode": "rising",
+      "x_healthy": 70.0,
+      "x_fail": 95.0,
+      "smoothing": { "method": "rolling_median", "window_hours": 6 },
+      "anchor_note": "Valve travel margin. The valve itself stays healthy in both scenarios."
+    },
+    {
+      "asset": "V-201",
+      "driver_tag": "LI201_V201_LEVEL",
+      "mode": "abs_deviation",
+      "centre": 50.0,
+      "x_healthy": 0.0,
+      "x_fail": 30.0,
+      "smoothing": { "method": "rolling_median", "window_hours": 6 }
+    },
+    {
+      "asset": "FV-201",
+      "driver_tag": "FI201_REFLUX_FLOW",
+      "mode": "abs_deviation",
+      "centre": 20.0,
+      "x_healthy": 0.0,
+      "x_fail": 8.0,
+      "smoothing": { "method": "rolling_median", "window_hours": 6 }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+# Guardrail rules v1 (app/engines/guardrail.py). Checked before any model call.
+# Patterns are Python regular expressions, matched case-insensitively.
+# Rules are checked in the order listed: injection first, then the specific bypass rule, then the general control rule.
+version: gr.v1
+equipment_tag: '\b(?:[A-Z]{1,4}-?\d{3}[A-Z]?)\b'
+rules:
+  - id: GR-INJ-01
+    description: Instruction-override phrasing
+    pattern: '\b(ignore|disregard|forget)\b[^.?!]{0,40}\b(previous|prior|above|earlier|all|your)\b[^.?!]{0,20}\b(instructions?|rules?|prompts?)\b'
+    allow_if: null
+    refusal: That request asks me to set aside my rules, so I haven’t acted on it.
+  - id: GR-INJ-02
+    description: Requests for the system prompt, hidden instructions or credentials
+    pattern: '\b(system\s+prompt|hidden\s+instructions?|your\s+instructions|api\s+key|password|credentials?|secret\s+key)\b'
+    allow_if: null
+    refusal: I can’t share my instructions or any credentials.
+  - id: GR-ACT-02
+    description: Bypass, disable, inhibit or override a safeguard, alarm, trip or interlock
+    pattern: '\b(bypass|disable|inhibit|override|defeat|suppress|silence|jumper|force)\b[^.?!]{0,60}?(\balarm\b|\btrip\b|\binterlock\b|\bpsv\b|\bsis\b|\bsafeguard\b|\bauto-?start\b|\b[A-Z]{1,4}-?\d{3}[A-Z]?\b)'
+    allow_if: null
+    refusal: >-
+      SafeLoop won’t help bypass or disable a safeguard. Any bypass needs the site’s override procedure
+      and the shift supervisor’s approval.
+  - id: GR-ACT-01
+    description: A control verb aimed at equipment, a valve, a setpoint or a pump
+    # A verb that changes plant state, followed within 60 characters by a tag or a control object.
+    pattern: '\b(open|close|shut|set|raise|lower|increase|decrease|adjust|start|stop|trip|reset|run|switch\s+on|switch\s+off|turn\s+on|turn\s+off|ramp)\b[^.?!]{0,60}?(\b[A-Z]{1,4}-?\d{3}[A-Z]?\b|\bvalve\b|\bset\s?point\b|\bpump\b|\bcompressor\b|\bcontroller\b|\bthroughput\b|\bfeed\b)'
+    # A question that asks HOW a procedure works is allowed (it gets the SOP, not an action).
+    allow_if: '^\s*(how|what|why|when|which|where|who|is|are|does|do|can\s+you\s+explain|explain)\b'
+    refusal: >-
+      SafeLoop can’t move valves or change setpoints. It has no connection to the DCS, PLC or SIS.
+      Follow the approved procedure at the panel, or ask me which procedure applies.

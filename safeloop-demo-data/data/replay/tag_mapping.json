@@ -1,0 +1,68 @@
+{
+  "replay_hours": 240,
+  "tags": {
+    "P101_DE_VIB_RMS": {
+      "unit": "mm/s",
+      "origin": "public_proxy",
+      "source_dataset": "NASA IMS bearing test 2",
+      "source_signal": "bearing 1 (failed, outer race), channel 1, RMS of each 1 s snapshot",
+      "transform": "S1: mean of ~4.1 snapshots per replay hour x 36.29 (healthy median -> 2.8 mm/s). S2: first 100 healthy hours repeated."
+    },
+    "P101_DE_VIB_KURT": {
+      "unit": "-",
+      "origin": "public_proxy",
+      "source_dataset": "NASA IMS bearing test 2",
+      "source_signal": "bearing 1 kurtosis of each snapshot",
+      "transform": "hourly mean, unscaled"
+    },
+    "P101_BRG_TEMP": {
+      "unit": "degC",
+      "origin": "synthetic",
+      "source_dataset": "derived from P101_DE_VIB_RMS",
+      "source_signal": "none: IMS has no temperature channel",
+      "transform": "58 + 2.2 x max(0, vib - 2.8), first-order lag tau 3 h, N(0, 0.3) noise, seed 100"
+    },
+    "P101B_DE_VIB_RMS": {
+      "unit": "mm/s",
+      "origin": "public_proxy",
+      "source_dataset": "NASA IMS bearing test 2",
+      "source_signal": "bearing 4 (did not fail), RMS",
+      "transform": "hourly mean x 36.12 (healthy median -> 2.0 mm/s); first 100 healthy hours repeated in both scenarios, because the rig's shared shaft couples the failing bearing into bearing 4"
+    },
+    "FI201_REFLUX_FLOW": {
+      "unit": "m3/h",
+      "origin": "public_proxy",
+      "source_dataset": "Tennessee Eastman Process (Braatz test runs)",
+      "source_signal": "XMEAS14: Separator underflow, rescaled to reflux flow. S1 from d00_te.dat (normal), S2 from d05_te.dat (IDV 5)",
+      "transform": "20.0 + (x - normal mean) x 0.8; 4 samples (12 min) averaged per replay hour"
+    },
+    "LI201_V201_LEVEL": {
+      "unit": "%",
+      "origin": "public_proxy",
+      "source_dataset": "Tennessee Eastman Process (Braatz test runs)",
+      "source_signal": "XMEAS12: Separator level, kept in %. S1 from d00_te.dat (normal), S2 from d05_te.dat (IDV 5)",
+      "transform": "50.0 + (x - normal mean) x 1.0; 4 samples (12 min) averaged per replay hour"
+    },
+    "PI201_V201_PRESS": {
+      "unit": "barg",
+      "origin": "public_proxy",
+      "source_dataset": "Tennessee Eastman Process (Braatz test runs)",
+      "source_signal": "XMEAS13: Separator pressure kPa, rescaled to barg. S1 from d00_te.dat (normal), S2 from d05_te.dat (IDV 5)",
+      "transform": "1.8 + (x - normal mean) x 0.01; 4 samples (12 min) averaged per replay hour"
+    },
+    "TI301_CW_OUT": {
+      "unit": "degC",
+      "origin": "public_proxy",
+      "source_dataset": "Tennessee Eastman Process (Braatz test runs)",
+      "source_signal": "XMEAS22: Separator cooling-water outlet temperature, rescaled. S1 from d00_te.dat (normal), S2 from d05_te.dat (IDV 5)",
+      "transform": "35.0 + (x - normal mean) x 2.0; 4 samples (12 min) averaged per replay hour"
+    },
+    "TV301_POS": {
+      "unit": "%",
+      "origin": "public_proxy",
+      "source_dataset": "Tennessee Eastman Process (Braatz test runs)",
+      "source_signal": "XMV11: Condenser cooling-water flow valve, rescaled to position %. S1 from d00_te.dat (normal), S2 from d05_te.dat (IDV 5)",
+      "transform": "55.0 + (x - normal mean) x 4.0; 4 samples (12 min) averaged per replay hour"
+    }
+  }
+}

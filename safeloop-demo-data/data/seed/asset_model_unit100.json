@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "description": "Unit 100 asset model for the SafeLoop MVP demo. Fictional plant; every record is synthetic. Sensor signals are mapped from public datasets (see data/replay/tag_mapping.json).",
+    "version": "am.v1",
+    "is_synthetic": true
+  },
+  "site": { "code": "DEMO-SITE", "name": "SafeLoop demonstration site (fictional)", "origin": "synthetic" },
+  "unit": { "code": "U100", "name": "Solvent Recovery", "site": "DEMO-SITE" },
+  "nodes": [
+    {
+      "code": "N1",
+      "name": "Reflux circuit",
+      "design_intent": "Return 18 to 22 m3/h of condensed overhead liquid from reflux drum V-201 to column C-200, using reflux pump P-101 with standby P-101B, under flow control FIC-201."
+    },
+    {
+      "code": "N2",
+      "name": "Overhead condensing",
+      "design_intent": "Condense column overhead vapour in E-301 with cooling water. TIC-301 holds condensate temperature by moving cooling-water valve TV-301."
+    }
+  ],
+  "assets": [
+    { "tag": "C-200", "name": "Distillation column", "node": "N1", "asset_class": "column", "criticality": "A", "is_monitored": false },
+    { "tag": "V-201", "name": "Reflux drum", "node": "N1", "asset_class": "vessel", "criticality": "A", "is_monitored": true },
+    { "tag": "S-101", "name": "Common suction strainer for P-101 and P-101B", "node": "N1", "asset_class": "strainer", "criticality": "B", "is_monitored": false },
+    { "tag": "P-101", "name": "Reflux pump", "node": "N1", "asset_class": "centrifugal_pump", "criticality": "A", "is_monitored": true },
+    { "tag": "P-101B", "name": "Standby reflux pump", "node": "N1", "asset_class": "centrifugal_pump", "criticality": "A", "is_monitored": true, "standby_of": "P-101" },
+    { "tag": "NRV-101", "name": "Reflux pump discharge check valve", "node": "N1", "asset_class": "check_valve", "criticality": "B", "is_monitored": false },
+    { "tag": "FV-201", "name": "Reflux flow control valve", "node": "N1", "asset_class": "control_valve", "criticality": "B", "is_monitored": true },
+    { "tag": "FT-201", "name": "Reflux flow transmitter", "node": "N1", "asset_class": "flow_transmitter", "criticality": "A", "is_monitored": false },
+    { "tag": "LT-201", "name": "Reflux drum level transmitter", "node": "N1", "asset_class": "level_transmitter", "criticality": "B", "is_monitored": false },
+    { "tag": "PT-201", "name": "Reflux drum pressure transmitter", "node": "N1", "asset_class": "pressure_transmitter", "criticality": "A", "is_monitored": false },
+    { "tag": "PSV-201", "name": "Reflux drum relief valve, set 3.0 barg", "node": "N1", "asset_class": "psv", "criticality": "A", "is_monitored": false },
+    { "tag": "E-301", "name": "Overhead condenser", "node": "N2", "asset_class": "heat_exchanger", "criticality": "A", "is_monitored": true },
+    { "tag": "TV-301", "name": "Condenser cooling-water valve", "node": "N2", "asset_class": "control_valve", "criticality": "A", "is_monitored": true },
+    { "tag": "TT-301", "name": "Condensate temperature transmitter", "node": "N2", "asset_class": "temperature_transmitter", "criticality": "B", "is_monitored": false },
+    { "tag": "TIC-301", "name": "Condensate temperature controller", "node": "N2", "asset_class": "controller", "criticality": "A", "is_monitored": false }
+  ],
+  "asset_links": [
+    { "code": "L-101", "from": "V-201", "to": "P-101", "relation": "feeds" },
+    { "code": "L-102", "from": "V-201", "to": "P-101B", "relation": "feeds" },
+    { "code": "L-103", "from": "P-101", "to": "S-101", "relation": "suction_from" },
+    { "code": "L-104", "from": "P-101B", "to": "S-101", "relation": "suction_from" },
+    { "code": "L-105", "from": "P-101", "to": "NRV-101", "relation": "feeds" },
+    { "code": "L-106", "from": "P-101B", "to": "NRV-101", "relation": "feeds" },
+    { "code": "L-107", "from": "NRV-101", "to": "FV-201", "relation": "feeds" },
+    { "code": "L-108", "from": "FV-201", "to": "C-200", "relation": "feeds" },
+    { "code": "L-109", "from": "FT-201", "to": "FV-201", "relation": "measures" },
+    { "code": "L-110", "from": "P-101B", "to": "P-101", "relation": "standby_for" },
+    { "code": "L-111", "from": "C-200", "to": "E-301", "relation": "feeds" },
+    { "code": "L-112", "from": "E-301", "to": "V-201", "relation": "feeds" },
+    { "code": "L-113", "from": "TV-301", "to": "E-301", "relation": "controls" },
+    { "code": "L-114", "from": "TIC-301", "to": "TV-301", "relation": "controls" },
+    { "code": "L-115", "from": "TT-301", "to": "E-301", "relation": "measures" },
+    { "code": "L-116", "from": "PSV-201", "to": "V-201", "relation": "protects" },
+    { "code": "L-117", "from": "PT-201", "to": "V-201", "relation": "measures" },
+    { "code": "L-118", "from": "LT-201", "to": "V-201", "relation": "measures" }
+  ],
+  "sensor_tags": [
+    { "tag": "P101_DE_VIB_RMS", "asset": "P-101", "description": "P-101 drive-end vibration, RMS", "eng_unit": "mm/s", "alert_high": 4.5, "alert_high_tightened": 3.5, "origin": "public_proxy", "source_dataset": "NASA IMS bearing test 2", "source_signal": "bearing 1, channel 1" },
+    { "tag": "P101_DE_VIB_KURT", "asset": "P-101", "description": "P-101 drive-end vibration, kurtosis", "eng_unit": "-", "alert_high": 6.0, "origin": "public_proxy", "source_dataset": "NASA IMS bearing test 2", "source_signal": "bearing 1, channel 1" },
+    { "tag": "P101_BRG_TEMP", "asset": "P-101", "description": "P-101 drive-end bearing temperature", "eng_unit": "degC", "alert_high": 72.0, "origin": "synthetic", "source_dataset": "derived from P101_DE_VIB_RMS", "source_signal": "none" },
+    { "tag": "P101B_DE_VIB_RMS", "asset": "P-101B", "description": "P-101B drive-end vibration, RMS", "eng_unit": "mm/s", "alert_high": 4.5, "origin": "public_proxy", "source_dataset": "NASA IMS bearing test 2", "source_signal": "bearing 4, channel 4" },
+    { "tag": "FI201_REFLUX_FLOW", "asset": "FT-201", "description": "Reflux flow to C-200", "eng_unit": "m3/h", "alert_low": 18.0, "alert_high": 22.0, "origin": "public_proxy", "source_dataset": "Tennessee Eastman Process", "source_signal": "XMEAS(14) separator underflow" },
+    { "tag": "LI201_V201_LEVEL", "asset": "LT-201", "description": "Reflux drum level", "eng_unit": "%", "alert_low": 25.0, "alert_high": 75.0, "origin": "public_proxy", "source_dataset": "Tennessee Eastman Process", "source_signal": "XMEAS(12) separator level" },
+    { "tag": "PI201_V201_PRESS", "asset": "PT-201", "description": "Reflux drum pressure", "eng_unit": "barg", "alert_high": 2.3, "origin": "public_proxy", "source_dataset": "Tennessee Eastman Process", "source_signal": "XMEAS(13) separator pressure" },
+    { "tag": "TI301_CW_OUT", "asset": "E-301", "description": "E-301 cooling-water outlet temperature", "eng_unit": "degC", "alert_high": 40.0, "origin": "public_proxy", "source_dataset": "Tennessee Eastman Process", "source_signal": "XMEAS(22) separator cooling-water outlet temperature" },
+    { "tag": "TV301_POS", "asset": "TV-301", "description": "TV-301 valve position", "eng_unit": "%", "alert_high": 80.0, "origin": "public_proxy", "source_dataset": "Tennessee Eastman Process", "source_signal": "XMV(11) condenser cooling-water flow" }
+  ],
+  "safeguards": [
+    { "ref_code": "P-101B auto-start", "type": "bpcs", "description": "P-101B starts automatically on low reflux flow (FT-201) when P-101 trips.", "depends_on": ["P-101B", "FT-201", "S-101"], "last_test_date": "2026-09-14" },
+    { "ref_code": "FIC-201 loop", "type": "bpcs", "description": "Reflux flow control with FT-201 and FV-201.", "depends_on": ["FT-201", "FV-201"], "last_test_date": "2026-06-02" },
+    { "ref_code": "TIC-301 loop", "type": "bpcs", "description": "Condensate temperature control moving TV-301. Only effective while E-301 has cooling margin.", "depends_on": ["TT-301", "TV-301", "E-301"], "last_test_date": "2026-06-02" },
+    { "ref_code": "PAH-201", "type": "alarm", "description": "High pressure alarm on V-201 at 2.3 barg, operator response per ARS-PAH201.", "depends_on": ["PT-201"], "last_test_date": "2026-03-20" },
+    { "ref_code": "LAH-201", "type": "alarm", "description": "High level alarm on V-201 at 75%.", "depends_on": ["LT-201"], "last_test_date": "2026-03-20" },
+    { "ref_code": "TAH-301", "type": "alarm", "description": "High condensate temperature alarm.", "depends_on": ["TT-301"], "last_test_date": "2026-03-20" },
+    { "ref_code": "PSV-201", "type": "ipl", "description": "Relief valve on V-201, set 3.0 barg, relieving to flare.", "depends_on": ["PSV-201"], "last_test_date": "2025-11-10" },
+    { "ref_code": "NRV-101", "type": "mechanical", "description": "Check valve on the common pump discharge. Mechanical safeguard, not credited as an IPL.", "depends_on": ["NRV-101"], "last_test_date": "2025-11-10" },
+    { "ref_code": "CW conductivity check", "type": "procedure", "description": "Weekly cooling-water conductivity sample to detect a condenser tube leak.", "depends_on": [], "last_test_date": null }
+  ]
+}

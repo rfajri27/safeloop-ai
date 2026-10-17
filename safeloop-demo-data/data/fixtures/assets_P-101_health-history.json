@@ -1,0 +1,892 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "replay_hour": 0,
+      "health_index": 99.7,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 1,
+      "health_index": 99.7,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 2,
+      "health_index": 99.7,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 3,
+      "health_index": 99.6,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 4,
+      "health_index": 99.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 5,
+      "health_index": 99.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 6,
+      "health_index": 99.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 7,
+      "health_index": 99.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 8,
+      "health_index": 99.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 9,
+      "health_index": 99.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 10,
+      "health_index": 99.5,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 11,
+      "health_index": 99.6,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 12,
+      "health_index": 99.6,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 13,
+      "health_index": 99.7,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 14,
+      "health_index": 99.7,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 15,
+      "health_index": 99.8,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 16,
+      "health_index": 99.8,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 17,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 18,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 19,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 20,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 21,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 22,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 23,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 24,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 25,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 26,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 27,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 28,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 29,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 30,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 31,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 32,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 33,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 34,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 35,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 36,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 37,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 38,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 39,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 40,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 41,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 42,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 43,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 44,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 45,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 46,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 47,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 48,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 49,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 50,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 51,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 52,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 53,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 54,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 55,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 56,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 57,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 58,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 59,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 60,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 61,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 62,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 63,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 64,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 65,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 66,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 67,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 68,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 69,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 70,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 71,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 72,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 73,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 74,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 75,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 76,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 77,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 78,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 79,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 80,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 81,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 82,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 83,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 84,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 85,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 86,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 87,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 88,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 89,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 90,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 91,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 92,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 93,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 94,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 95,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 96,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 97,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 98,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 99,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 100,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 101,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 102,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 103,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 104,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 105,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 106,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 107,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 108,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 109,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 110,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 111,
+      "health_index": 99.8,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 112,
+      "health_index": 99.7,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 113,
+      "health_index": 99.7,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 114,
+      "health_index": 99.8,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 115,
+      "health_index": 99.7,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 116,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 117,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 118,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 119,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 120,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 121,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 122,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 123,
+      "health_index": 100.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 124,
+      "health_index": 99.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 125,
+      "health_index": 99.7,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 126,
+      "health_index": 99.8,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 127,
+      "health_index": 99.5,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 128,
+      "health_index": 99.5,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 129,
+      "health_index": 99.5,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 130,
+      "health_index": 99.5,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 131,
+      "health_index": 99.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 132,
+      "health_index": 98.2,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 133,
+      "health_index": 97.2,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 134,
+      "health_index": 97.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 135,
+      "health_index": 96.6,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 136,
+      "health_index": 96.1,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 137,
+      "health_index": 95.8,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 138,
+      "health_index": 95.6,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 139,
+      "health_index": 95.6,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 140,
+      "health_index": 95.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 141,
+      "health_index": 95.2,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 142,
+      "health_index": 95.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 143,
+      "health_index": 94.8,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 144,
+      "health_index": 94.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 145,
+      "health_index": 94.2,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 146,
+      "health_index": 94.2,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 147,
+      "health_index": 94.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 148,
+      "health_index": 93.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 149,
+      "health_index": 93.6,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 150,
+      "health_index": 93.1,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 151,
+      "health_index": 92.5,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 152,
+      "health_index": 92.2,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 153,
+      "health_index": 92.1,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 154,
+      "health_index": 92.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 155,
+      "health_index": 91.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 156,
+      "health_index": 91.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 157,
+      "health_index": 91.8,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 158,
+      "health_index": 91.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 159,
+      "health_index": 90.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 160,
+      "health_index": 89.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 161,
+      "health_index": 88.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 162,
+      "health_index": 87.8,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 163,
+      "health_index": 87.8,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 164,
+      "health_index": 87.8,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 165,
+      "health_index": 88.0,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 166,
+      "health_index": 88.1,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 167,
+      "health_index": 88.1,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 168,
+      "health_index": 88.1,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 169,
+      "health_index": 87.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 170,
+      "health_index": 87.6,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 171,
+      "health_index": 87.4,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 172,
+      "health_index": 86.9,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 173,
+      "health_index": 79.1,
+      "band": "healthy"
+    },
+    {
+      "replay_hour": 174,
+      "health_index": 65.9,
+      "band": "degraded"
+    },
+    {
+      "replay_hour": 175,
+      "health_index": 60.9,
+      "band": "degraded"
+    },
+    {
+      "replay_hour": 176,
+      "health_index": 60.9,
+      "band": "degraded"
+    }
+  ],
+  "metadata": null,
+  "message": "Success"
+}

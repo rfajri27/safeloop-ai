@@ -1,0 +1,90 @@
+{
+  "_meta": {
+    "description": "Unit 100 HAZOP register, Nodes 1 and 2, as loaded at the start of every demo run. Fictional and synthetic; written for the SafeLoop demo, not taken from any real plant.",
+    "study": "HAZOP-U100 revalidation 2023 (synthetic)",
+    "risk_matrix": "5 x 5, score = likelihood x severity; Low 1-4, Medium 5-9, High 10-14, Extreme 15-25",
+    "is_synthetic": true
+  },
+  "rows": [
+    {
+      "row_code": "HZ-N1-001", "node": "N1", "guide_word": "more", "parameter": "flow",
+      "deviation": "More reflux flow to C-200",
+      "cause": "FV-201 fails open", "cause_asset": "FV-201",
+      "consequence": "Column flooding; off-spec overhead product",
+      "severity": 2, "likelihood_base": 2,
+      "safeguards": ["FIC-201 loop"],
+      "recommendations": [],
+      "citations": ["doc:HAZOP-U100#node-1"]
+    },
+    {
+      "row_code": "HZ-N1-002", "node": "N1", "guide_word": "reverse", "parameter": "flow",
+      "deviation": "Reverse flow through the reflux pumps",
+      "cause": "P-101 stops while its discharge valve is open", "cause_asset": null,
+      "consequence": "Backflow from the column into V-201; pump runs backwards",
+      "severity": 2, "likelihood_base": 2,
+      "safeguards": ["NRV-101"],
+      "recommendations": [],
+      "citations": ["doc:HAZOP-U100#node-1", "doc:SOP-P101-02#step-7"]
+    },
+    {
+      "row_code": "HZ-N1-003", "node": "N1", "guide_word": "no", "parameter": "flow",
+      "deviation": "No reflux to C-200",
+      "cause": "P-101 bearing failure", "cause_asset": "P-101",
+      "consequence": "Loss of reflux; overhead temperature and V-201 pressure rise; possible PSV-201 lift to flare",
+      "severity": 4, "likelihood_base": 2,
+      "safeguards": ["P-101B auto-start", "PSV-201", "PAH-201"],
+      "recommendations": ["Keep the monthly P-101B auto-start test, including a check that FT-201 is reading live."],
+      "citations": ["doc:HAZOP-U100#node-1", "doc:MAN-P101#6.3", "doc:INC-2023-009"]
+    },
+    {
+      "row_code": "HZ-N1-004", "node": "N1", "guide_word": "high", "parameter": "pressure",
+      "deviation": "High pressure in C-200 overhead",
+      "cause": "Loss of reflux or loss of overhead cooling", "cause_asset": null,
+      "consequence": "Over-pressure; PSV-201 lift to flare",
+      "severity": 4, "likelihood_base": 1,
+      "safeguards": ["PSV-201", "PAH-201"],
+      "recommendations": [],
+      "citations": ["doc:HAZOP-U100#node-1"]
+    },
+    {
+      "row_code": "HZ-N1-005", "node": "N1", "guide_word": "high", "parameter": "level",
+      "deviation": "High level in V-201",
+      "cause": "P-101 trips and the drum keeps filling", "cause_asset": "P-101",
+      "consequence": "Liquid carry-over to the vent header",
+      "severity": 3, "likelihood_base": 1,
+      "safeguards": ["LAH-201", "P-101B auto-start"],
+      "recommendations": [],
+      "citations": ["doc:HAZOP-U100#node-1"]
+    },
+    {
+      "row_code": "HZ-N2-001", "node": "N2", "guide_word": "high", "parameter": "temperature",
+      "deviation": "High condensate temperature from E-301",
+      "cause": "Loss of E-301 cooling: cooling-water supply temperature rise or TV-301 sticking", "cause_asset": "E-301",
+      "consequence": "Uncondensed vapour to V-201; drum pressure rise",
+      "severity": 3, "likelihood_base": 2,
+      "safeguards": ["TIC-301 loop", "TAH-301"],
+      "recommendations": [],
+      "citations": ["doc:HAZOP-U100#node-2", "doc:MR-2025-044"]
+    },
+    {
+      "row_code": "HZ-N2-002", "node": "N2", "guide_word": "high", "parameter": "pressure",
+      "deviation": "High pressure in V-201",
+      "cause": "Loss of condenser cooling", "cause_asset": "E-301",
+      "consequence": "Over-pressure of V-201; PSV-201 lift to flare",
+      "severity": 5, "likelihood_base": 1,
+      "safeguards": ["PSV-201", "PAH-201"],
+      "recommendations": [],
+      "citations": ["doc:HAZOP-U100#node-2", "doc:ARS-PAH201", "doc:SOP-E301-01"]
+    },
+    {
+      "row_code": "HZ-N2-003", "node": "N2", "guide_word": "as_well_as", "parameter": "composition",
+      "deviation": "Contamination of condensate with cooling water",
+      "cause": "E-301 tube leak into the process side", "cause_asset": null,
+      "consequence": "Water in recovered solvent; off-spec product",
+      "severity": 2, "likelihood_base": 2,
+      "safeguards": ["CW conductivity check"],
+      "recommendations": [],
+      "citations": ["doc:HAZOP-U100#node-2"]
+    }
+  ]
+}
