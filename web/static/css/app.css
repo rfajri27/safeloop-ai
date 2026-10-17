@@ -486,8 +486,19 @@ svg { flex-shrink: 0; }
 .source-tabs button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-chip); }
 .passage {
   padding: 14px 16px; border-radius: 18px; background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent);
-  display: flex; flex-direction: column; gap: 8px; font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere;
+  display: flex; flex-direction: column; gap: 8px; font-size: 14px; overflow-wrap: anywhere;
 }
+.md { display: flex; flex-direction: column; gap: 6px; line-height: 1.5; }
+.md > * { margin: 0; }
+.md-h { font-weight: 600; color: var(--ink); }
+.md-h1, .md-h2 { font-size: 15px; }
+.md-h3, .md-h4, .md-h5, .md-h6 { font-size: 13px; margin-top: 6px; color: var(--accent); }
+.md-h:first-child { margin-top: 0; }
+.md-list { padding-left: 20px; display: flex; flex-direction: column; gap: 2px; }
+.md code { font-family: var(--font-mono); font-size: 12.5px; padding: 1px 5px; border-radius: 6px; background: var(--surface); }
+.md-table { border-collapse: collapse; font-size: 13px; display: block; overflow-x: auto; }
+.md-table th, .md-table td { padding: 4px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+.md-table th { font-weight: 600; }
 .doc-list { display: flex; flex-direction: column; gap: 6px; }
 .doc-item { display: flex; gap: 10px; align-items: baseline; font-size: 13px; }
 

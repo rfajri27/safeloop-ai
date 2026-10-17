@@ -22,6 +22,63 @@ export function html(strings, ...vals) {
 
 export function render(el, view) { el.innerHTML = part(view); }
 
+// ---------- Markdown (document passages) ----------
+
+const mdInline = (s) => escape(s)
+  .replace(/`([^`]+)`/g, '<code>$1</code>')
+  .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+  .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>');
+
+const mdCells = (line) => line.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+
+/**
+ * Minimal markdown for retrieved document text: headings, lists, pipe tables,
+ * paragraphs, bold/italic/code. Text is escaped first, so no source HTML survives.
+ */
+export function markdown(text) {
+  const lines = String(text ?? '').replace(/\r\n?/g, '\n').split('\n');
+  const out = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (!line.trim()) { i += 1; continue; }
+
+    const h = line.match(/^\s*(#{1,6})\s+(.*?)\s*#*\s*$/);
+    if (h) {
+      out.push(`<div class="md-h md-h${h[1].length}" role="heading" aria-level="${Math.min(h[1].length + 2, 6)}">${mdInline(h[2])}</div>`);
+      i += 1; continue;
+    }
+
+    if (/^\s*\|.*\|\s*$/.test(line) && /^\s*\|?\s*:?-{2,}/.test(lines[i + 1] || '')) {
+      const head = mdCells(line);
+      const rows = [];
+      i += 2;
+      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) { rows.push(mdCells(lines[i])); i += 1; }
+      out.push(`<table class="md-table"><thead><tr>${head.map((c) => `<th>${mdInline(c)}</th>`).join('')}</tr></thead>`
+        + `<tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${mdInline(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`);
+      continue;
+    }
+
+    const li = line.match(/^\s*([-*+]|\d+[.)])\s+/);
+    if (li) {
+      const ordered = /\d/.test(li[1]);
+      const re = ordered ? /^\s*\d+[.)]\s+(.*)$/ : /^\s*[-*+]\s+(.*)$/;
+      const items = [];
+      while (i < lines.length && re.test(lines[i])) { items.push(lines[i].match(re)[1]); i += 1; }
+      const tag = ordered ? 'ol' : 'ul';
+      out.push(`<${tag} class="md-list">${items.map((t) => `<li>${mdInline(t)}</li>`).join('')}</${tag}>`);
+      continue;
+    }
+
+    const para = [];
+    while (i < lines.length && lines[i].trim()
+      && !/^\s*(#{1,6}\s|[-*+]\s|\d+[.)]\s|\|)/.test(lines[i])) { para.push(mdInline(lines[i].trim())); i += 1; }
+    if (!para.length) { para.push(mdInline(line.trim())); i += 1; }
+    out.push(`<p>${para.join('<br>')}</p>`);
+  }
+  return raw(`<div class="md">${out.join('')}</div>`);
+}
+
 // ---------- Icons (inline stroke SVG from the design) ----------
 
 const P = {

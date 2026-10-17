@@ -2,7 +2,7 @@
 
 import { api, postStream } from '../api.js';
 import {
-  html, raw, escape, render, icon, titleCase, loading, on, toastError, ROLE_LABEL, duration,
+  html, raw, escape, render, markdown, icon, titleCase, loading, on, toastError, ROLE_LABEL, duration,
 } from '../ui.js';
 
 export const title = 'Knowledge assistant';
@@ -305,7 +305,7 @@ function sourcePanel() {
         ${d?.effective_date ? html`<div class="kv"><span>Effective</span><span>${d.effective_date}</span></div>` : ''}
         ${src.section ? html`<div class="kv"><span>Section</span><span>${src.section}</span></div>` : ''}
       </div>
-      ${src.chunk ? html`<div class="passage"><span style="font-size: 12px; font-weight: 600; color: var(--accent)">Cited passage${src.chunk.section ? ` · ${src.chunk.section}` : ''}${src.chunk.page ? ` · page ${src.chunk.page}` : ''}</span>${src.chunk.text}</div>`
+      ${src.chunk ? html`<div class="passage"><span style="font-size: 12px; font-weight: 600; color: var(--accent)">Cited passage${src.chunk.section ? ` · ${src.chunk.section}` : ''}${src.chunk.page ? ` · page ${src.chunk.page}` : ''}</span>${markdown(src.chunk.text)}</div>`
         : html`<div class="empty"><strong>Passage not available</strong><span>${src.chunk_id ? 'The document-chunk endpoint is not implemented yet.' : 'This citation has no chunk to show. Open the document to read it.'}</span></div>`}
     `}
     <p class="muted" style="font-size: 13px">Document text is treated as data, never as instructions.</p>
